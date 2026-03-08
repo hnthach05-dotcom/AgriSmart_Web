@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thời tiết nông nghiệp theo vùng miền - AgriSmart</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Weather page specific styles */
+        .weather-page { margin-bottom: 60px; }
+        .page-title { margin-bottom: 10px; }
+        .page-subtitle { color: var(--gray-color); margin-bottom: 30px; }
+        
+        /* Region selector */
+        .region-selector-container {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9f5e9 100%);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .region-selector-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--dark-color);
+        }
+        
+        .region-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .region-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: white;
+            color: var(--dark-color);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .region-btn i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        
+        .region-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .region-btn:hover i {
+            color: white;
+        }
+        
+        .region-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .region-btn.active i {
+            color: white;
+        }
+        
+        .current-region-info {
+            background-color: white;
+            border-radius: 50px;
+            padding: 12px 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            box-shadow: var(--shadow);
+        }
+        
+        .current-region-info i {
+            color: var(--primary-color);
+        }
+        
+        /* Current Weather Widget */
+        .current-weather-widget {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            border-top: 4px solid var(--primary-color);
+        }
+        
+        .weather-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .weather-header h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+        }
+        
+        .update-time {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .current-weather-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .current-weather-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .current-weather-main {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .current-temp {
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .temp-value {
+            font-size: 5rem;
+            font-weight: 300;
+            line-height: 1;
+        }
+        
+        .temp-unit {
+            font-size: 2rem;
+            margin-top: 10px;
+        }
+        
+        .current-condition {
+            text-align: center;
+        }
+        
+        .condition-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .condition-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        
+        .current-weather-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .weather-detail {
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .detail-label {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+            margin-bottom: 8px;
+        }
+        
+        .detail-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        /* Weather Alerts */
+        .weather-alerts {
+            margin-bottom: 30px;
+        }
+        
+        .alert-card {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .alert-card.warning-high {
+            background-color: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        
+        .alert-card.warning-medium {
+            background-color: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        
+        .alert-card.warning-low {
+            background-color: #d1e7dd;
+            border-left-color: #198754;
+        }
+        
+        .alert-icon {
+            font-size: 2rem;
+            color: #dc3545;
+        }
+        
+        .alert-content {
+            flex: 1;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-badge {
+            background-color: #dc3545;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        
+        .alert-time {
+            font-size: 0.85rem;
+            color: var(--gray-color);
+            margin-top: 8px;
+        }
+        
+        /* Recommendations */
+        .recommendations-section {
+            margin-bottom: 40px;
+        }
+        
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .recommendation-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9f5e9 100%);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+        
+        .recommendation-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .recommendation-icon {
+            width: 60px;
+            height: 60px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+        
+        .recommendation-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .recommendation-card p {
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            color: var(--gray-color);
+        }
+        
+        .recommendation-tag {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        /* Detailed Forecast */
+        .detailed-forecast {
+            margin-bottom: 40px;
+        }
+        
+        .forecast-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .forecast-day-detailed {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .forecast-day-detailed:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            background-color: #e9f5e9;
+        }
+        
+        .forecast-day-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .forecast-date {
+            font-size: 0.8rem;
+            color: var(--gray-color);
+            margin-bottom: 10px;
+        }
+        
+        .forecast-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+        
+        .forecast-temp {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .forecast-desc {
+            font-size: 0.8rem;
+            color: var(--gray-color);
+        }
+        
+        .forecast-rain {
+            font-size: 0.8rem;
+            color: #2196f3;
+            margin-top: 5px;
+        }
+        
+        /* Regional Comparison */
+        .regional-comparison {
+            margin-bottom: 40px;
+        }
+        
+        .comparison-table {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .comparison-row {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1.5fr 1fr 2fr;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+        }
+        
+        .comparison-row:last-child {
+            border-bottom: none;
+        }
+        
+        .comparison-header {
+            background-color: #e9f5e9;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .region-highlight {
+            background-color: #fff3cd;
+        }
+        
+        .weather-icon-small {
+            color: var(--primary-color);
+            margin-right: 8px;
+        }
+        
+        /* Farming Calendar */
+        .farming-calendar {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9f5e9 100%);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .calendar-legend {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .legend-color.green {
+            background-color: #e9f5e9;
+        }
+        
+        .legend-color.red {
+            background-color: #f8d7da;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+        
+        .calendar-day {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 15px 10px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .calendar-day.today {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .calendar-day-number {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .calendar-activity {
+            font-size: 0.7rem;
+            background-color: #e9f5e9;
+            padding: 3px 6px;
+            border-radius: 4px;
+            margin-top: 5px;
+            color: var(--dark-color);
+        }
+        
+        .calendar-activity.warning {
+            background-color: #f8d7da;
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER WITH USER MENU -->
+    <header>
+        <div class="logo">Agri<span>Smart</span></div>
+        
+        <nav>
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home"></i> Trang chủ</a></li>
+                <li><a href="weather.html" class="active"><i class="fas fa-cloud-sun"></i> Thời tiết</a></li>
+                <li><a href="prices.html"><i class="fas fa-chart-line"></i> Giá cả</a></li>
+                <li><a href="knowledge.html"><i class="fas fa-book"></i> Kiến thức</a></li>
+                <li><a href="community.html"><i class="fas fa-users"></i> Cộng đồng</a></li>
+            </ul>
+        </nav>
+        
+        <div class="header-right">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Tìm kiếm..." id="searchInput">
+            </div>
+            
+            <div class="notification" id="notificationBtn">
+                <i class="fas fa-bell"></i>
+                <!-- Đã xóa badge thông báo -->
+            </div>
+            
+            <div class="user-profile" id="userMenuContainer">
+                <!-- User menu sẽ được cập nhật bằng JavaScript -->
+            </div>
+        </div>
+    </header>
+    
+    <!-- WEATHER PAGE CONTENT -->
+    <main class="weather-page">
+        <h1 class="page-title">Thời tiết nông nghiệp theo vùng miền</h1>
+        <p class="page-subtitle">Cập nhật thời tiết thực tế, cảnh báo sớm và khuyến nghị canh tác thông minh</p>
+        
+        <!-- Region Selector -->
+        <div class="region-selector-container">
+            <div class="region-selector-title">
+                <i class="fas fa-map-marker-alt" style="color: var(--primary-color);"></i>
+                Chọn vùng miền để xem thời tiết chi tiết:
+            </div>
+            
+            <div class="region-buttons">
+                <button class="region-btn active" data-region="north" data-city="Hanoi">
+                    <i class="fas fa-mountain"></i>
+                    Miền Bắc
+                </button>
+                <button class="region-btn" data-region="central" data-city="Da Nang">
+                    <i class="fas fa-umbrella-beach"></i>
+                    Miền Trung
+                </button>
+                <button class="region-btn" data-region="south" data-city="Ho Chi Minh City">
+                    <i class="fas fa-tree"></i>
+                    Miền Nam
+                </button>
+                <button class="region-btn" data-region="highlands" data-city="Buon Ma Thuot">
+                    <i class="fas fa-mountain-sun"></i>
+                    Tây Nguyên
+                </button>
+                <button class="region-btn" data-region="mekong" data-city="Can Tho">
+                    <i class="fas fa-water"></i>
+                    Đồng bằng sông Cửu Long
+                </button>
+            </div>
+            
+            <div class="current-region-info" id="currentRegionInfo">
+                <i class="fas fa-map-pin"></i>
+                <span>Đang xem: Miền Bắc - Hà Nội</span>
+                <span id="updateCounter" style="margin-left: 10px; font-size: 0.85rem; color: var(--gray-color);">
+                    <i class="fas fa-sync-alt fa-spin"></i> Tự động cập nhật
+                </span>
+            </div>
+        </div>
+        
+        <!-- Current Weather Widget -->
+        <div class="current-weather-widget" id="currentWeatherWidget">
+            <div class="weather-header">
+                <h2>
+                    <i class="fas fa-map-marker-alt" id="locationIcon"></i>
+                    <span id="locationName">Hà Nội</span>
+                </h2>
+                <div class="update-time" id="updateTime">
+                    <i class="far fa-clock"></i>
+                    <span>Đang cập nhật...</span>
+                </div>
+            </div>
+            
+            <div class="current-weather-content">
+                <div class="current-weather-main">
+                    <div class="current-temp">
+                        <div class="temp-value" id="currentTemp">--</div>
+                        <div class="temp-unit">°C</div>
+                    </div>
+                    <div class="current-condition">
+                        <div class="condition-icon" id="currentConditionIcon">
+                            <i class="fas fa-cloud-sun"></i>
+                        </div>
+                        <div class="condition-text" id="currentConditionText">Đang tải...</div>
+                    </div>
+                </div>
+                
+                <div class="current-weather-details">
+                    <div class="weather-detail">
+                        <div class="detail-label">Độ ẩm</div>
+                        <div class="detail-value" id="humidityValue">--%</div>
+                    </div>
+                    <div class="weather-detail">
+                        <div class="detail-label">Gió</div>
+                        <div class="detail-value" id="windValue">-- km/h</div>
+                    </div>
+                    <div class="weather-detail">
+                        <div class="detail-label">Áp suất</div>
+                        <div class="detail-value" id="pressureValue">-- hPa</div>
+                    </div>
+                    <div class="weather-detail">
+                        <div class="detail-label">Tầm nhìn</div>
+                        <div class="detail-value" id="visibilityValue">-- km</div>
+                    </div>
+                    <div class="weather-detail">
+                        <div class="detail-label">UV Index</div>
+                        <div class="detail-value" id="uvIndex">--</div>
+                    </div>
+                    <div class="weather-detail">
+                        <div class="detail-label">Khả năng mưa</div>
+                        <div class="detail-value" id="rainChance">--%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Weather Alerts -->
+        <div class="weather-alerts" id="weatherAlertsContainer">
+            <!-- Alerts will be dynamically added here -->
+        </div>
+        
+        <!-- Recommendations -->
+        <section class="recommendations-section">
+            <h2 class="section-title">
+                <i class="fas fa-lightbulb"></i>
+                Khuyến nghị canh tác cho <span id="recommendRegion">Miền Bắc</span>
+            </h2>
+            <div class="recommendations-grid" id="recommendationsGrid">
+                <!-- Recommendations will be dynamically added here -->
+                <div class="loading">Đang phân tích thời tiết để đưa ra khuyến nghị...</div>
+            </div>
+        </section>
+        
+        <!-- Detailed Forecast -->
+        <section class="detailed-forecast">
+            <h2 class="section-title">
+                <i class="fas fa-calendar-week"></i>
+                Dự báo 7 ngày tới tại <span id="forecastRegion">Hà Nội</span>
+            </h2>
+            <div class="forecast-container" id="detailedForecast">
+                <div class="loading">Đang tải dữ liệu dự báo...</div>
+            </div>
+        </section>
+        
+        <!-- Regional Comparison -->
+        <section class="regional-comparison">
+            <h2 class="section-title">
+                <i class="fas fa-chart-bar"></i>
+                So sánh thời tiết giữa các vùng miền
+            </h2>
+            <div class="comparison-table" id="comparisonTable">
+                <div class="comparison-row comparison-header">
+                    <div>Vùng miền</div>
+                    <div>Nhiệt độ</div>
+                    <div>Thời tiết</div>
+                    <div>Độ ẩm</div>
+                    <div>Cảnh báo</div>
+                </div>
+                <!-- Comparison rows will be dynamically added -->
+            </div>
+        </section>
+        
+        <!-- Farming Calendar -->
+        <section class="farming-calendar">
+            <div class="calendar-header">
+                <h2 style="margin:0;">
+                    <i class="fas fa-calendar-alt"></i>
+                    Lịch canh tác thông minh
+                </h2>
+                <div class="calendar-legend">
+                    <div class="legend-item">
+                        <div class="legend-color green"></div>
+                        <span>🌱 Nên làm</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color red"></div>
+                        <span>⚠️ Cần thận</span>
+                    </div>
+                </div>
+            </div>
+            <div class="calendar-grid" id="farmingCalendar">
+                <!-- Calendar days will be dynamically added -->
+            </div>
+        </section>
+    </main>
+    
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-grid">
+                <!-- Cột 1: Giới thiệu -->
+                <div class="footer-col">
+                    <div class="footer-logo">Agri<span>Smart</span></div>
+                    <p>Nền tảng nông nghiệp thông minh hàng đầu Việt Nam, kết nối nhà nông với công nghệ và thị trường.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-zalo"></i></a>
+                    </div>
+                </div>
+                
+                <!-- Cột 2: Liên kết nhanh -->
+                <div class="footer-col">
+                    <h3>Liên kết nhanh</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html"><i class="fas fa-chevron-right"></i> Trang chủ</a></li>
+                        <li><a href="weather.html"><i class="fas fa-chevron-right"></i> Thời tiết</a></li>
+                        <li><a href="prices.html"><i class="fas fa-chevron-right"></i> Giá nông sản</a></li>
+                        <li><a href="knowledge.html"><i class="fas fa-chevron-right"></i> Kiến thức</a></li>
+                        <li><a href="community.html"><i class="fas fa-chevron-right"></i> Cộng đồng</a></li>
+                        <li><a href="profile.html"><i class="fas fa-chevron-right"></i> Trang cá nhân</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Cột 3: Liên hệ -->
+                <div class="footer-col">
+                    <h3>Liên hệ</h3>
+                    <ul class="contact-info">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>123 Nguyễn Văn Linh, Quận 7, TP.HCM</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone-alt"></i>
+                            <span>1800-1234 (Miễn phí)</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>info@agrismart.vn</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Cột 4: Tải ứng dụng -->
+                <div class="footer-col">
+                    <h3>Tải ứng dụng</h3>
+                    <p>Ứng dụng AgriSmart có mặt trên:</p>
+                    <div class="app-buttons">
+                        <a href="#" class="app-btn">
+                            <i class="fab fa-google-play"></i>
+                            Google Play
+                        </a>
+                        <a href="#" class="app-btn">
+                            <i class="fab fa-apple"></i>
+                            App Store
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 AgriSmart - Nông Nghiệp Thông Minh. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ========== USER AUTHENTICATION & NOTIFICATION ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            updateUserMenu();
+            
+            // Initialize weather with default region (North)
+            loadRegionWeather('north', 'Hanoi');
+            
+            // Setup region buttons
+            document.querySelectorAll('.region-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const region = this.dataset.region;
+                    const city = this.dataset.city;
+                    
+                    // Update region info
+                    document.getElementById('currentRegionInfo').querySelector('span').textContent = `Đang xem: ${this.textContent.trim()}`;
+                    document.getElementById('recommendRegion').textContent = this.textContent.trim();
+                    document.getElementById('forecastRegion').textContent = city;
+                    
+                    // Load weather data for selected region
+                    loadRegionWeather(region, city);
+                });
+            });
+            
+            // Notification click handler
+            document.getElementById('notificationBtn').addEventListener('click', function() {
+                showNotificationModal();
+            });
+            
+            // Auto-refresh every 10 minutes
+            setInterval(() => {
+                const activeBtn = document.querySelector('.region-btn.active');
+                if (activeBtn) {
+                    loadRegionWeather(activeBtn.dataset.region, activeBtn.dataset.city);
+                }
+            }, 600000); // 10 minutes
+        });
+
+        function updateUserMenu() {
+            const userContainer = document.getElementById('userMenuContainer');
+            const savedUser = localStorage.getItem('agri_user') || sessionStorage.getItem('agri_user');
+            
+            if (savedUser) {
+                const userData = JSON.parse(savedUser);
+                userContainer.innerHTML = `
+                    <div class="user-profile" onclick="toggleUserDropdown(event)">
+                        <img src="${userData.avatar || 'https://i.pravatar.cc/40?u=' + userData.email}" alt="${userData.name}" class="user-avatar">
+                        <div class="user-dropdown">
+                            <div class="dropdown-header">
+                                <img src="${userData.avatar || 'https://i.pravatar.cc/50?u=' + userData.email}" alt="${userData.name}">
+                                <div class="user-info">
+                                    <h4>${userData.name}</h4>
+                                    <p>${userData.email}</p>
+                                </div>
+                            </div>
+                            <ul class="dropdown-menu">
+                                <li><a href="profile.html"><i class="fas fa-user"></i> Trang cá nhân</a></li>
+                            </ul>
+                            <div class="dropdown-footer">
+                                <a href="#" onclick="logout(); return false;" class="logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                userContainer.innerHTML = `<a href="login.html" class="login-btn"><i class="fas fa-sign-in-alt"></i> Đăng nhập</a>`;
+            }
+        }
+
+        function toggleUserDropdown(event) {
+            event.stopPropagation();
+            event.currentTarget.classList.toggle('active');
+        }
+
+        document.addEventListener('click', function() {
+            const userProfile = document.querySelector('.user-profile');
+            if (userProfile) userProfile.classList.remove('active');
+        });
+
+        function logout() {
+            localStorage.removeItem('agri_user');
+            sessionStorage.removeItem('agri_user');
+            window.location.reload();
+        }
+
+        // ========== NOTIFICATION MODAL - TÍNH NĂNG ĐANG PHÁT TRIỂN ==========
+        function showNotificationModal() {
+            const modal = document.createElement('div');
+            modal.className = 'notification-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Thông báo</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="developing-content">
+                        <div class="developing-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="developing-title">Tính năng đang phát triển</div>
+                        <div class="developing-text">
+                            Chức năng thông báo sẽ được cập nhật trong thời gian tới. 
+                            Hiện tại bạn có thể theo dõi thông tin qua các trang khác.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-ok" onclick="closeNotificationModal(this)">Đã hiểu</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            const closeBtn = modal.querySelector('.close-modal');
+            closeBtn.addEventListener('click', function() {
+                document.body.removeChild(modal);
+            });
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+        
+        function closeNotificationModal(btn) {
+            const modal = btn.closest('.notification-modal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+        }
+
+        // ========== WEATHER DATA ==========
+        const API_KEY = 'bd5e378503939ddaee76f12ad7a97608'; // Demo API key
+        
+        // Region database with coordinates for more accurate weather
+        const regions = {
+            north: {
+                name: 'Miền Bắc',
+                city: 'Hanoi',
+                lat: 21.0285,
+                lon: 105.8542,
+                crops: ['lúa', 'ngô', 'rau màu', 'cây ăn quả ôn đới']
+            },
+            central: {
+                name: 'Miền Trung',
+                city: 'Da Nang',
+                lat: 16.0544,
+                lon: 108.2022,
+                crops: ['lúa', 'cây công nghiệp', 'dừa', 'tiêu']
+            },
+            south: {
+                name: 'Miền Nam',
+                city: 'Ho Chi Minh City',
+                lat: 10.8231,
+                lon: 106.6297,
+                crops: ['cây ăn trái', 'rau màu', 'hoa kiểng']
+            },
+            highlands: {
+                name: 'Tây Nguyên',
+                city: 'Buon Ma Thuot',
+                lat: 12.6675,
+                lon: 108.0378,
+                crops: ['cà phê', 'tiêu', 'cao su', 'điều']
+            },
+            mekong: {
+                name: 'Đồng bằng sông Cửu Long',
+                city: 'Can Tho',
+                lat: 10.0452,
+                lon: 105.7469,
+                crops: ['lúa', 'trái cây', 'thủy sản', 'rau màu']
+            }
+        };
+
+        async function loadRegionWeather(regionKey, city) {
+            try {
+                // Show loading state
+                document.getElementById('currentTemp').textContent = '--';
+                document.getElementById('recommendationsGrid').innerHTML = '<div class="loading">Đang phân tích thời tiết...</div>';
+                document.getElementById('detailedForecast').innerHTML = '<div class="loading">Đang tải dữ liệu dự báo...</div>';
+                
+                const region = regions[regionKey];
+                document.getElementById('locationName').textContent = region.name;
+                
+                // Fetch current weather
+                const currentResponse = await fetch(
+                    `https://api.openweathermap.org/data/2.5/weather?q=${city},VN&units=metric&appid=${API_KEY}&lang=vi`
+                );
+                const currentData = await currentResponse.json();
+                
+                // Fetch forecast
+                const forecastResponse = await fetch(
+                    `https://api.openweathermap.org/data/2.5/forecast?q=${city},VN&units=metric&appid=${API_KEY}&lang=vi`
+                );
+                const forecastData = await forecastResponse.json();
+                
+                // Update UI with current weather
+                updateCurrentWeather(currentData);
+                
+                // Generate alerts based on weather conditions
+                generateWeatherAlerts(currentData, region);
+                
+                // Generate recommendations based on weather
+                generateRecommendations(currentData, region);
+                
+                // Update forecast
+                updateForecast(forecastData);
+                
+                // Update regional comparison
+                await updateRegionalComparison(regionKey);
+                
+                // Update farming calendar
+                updateFarmingCalendar(currentData, region);
+                
+                // Update update time
+                const now = new Date();
+                document.getElementById('updateTime').innerHTML = `
+                    <i class="far fa-clock"></i>
+                    <span>Cập nhật: ${now.toLocaleTimeString('vi-VN')} ${now.toLocaleDateString('vi-VN')}</span>
+                `;
+                
+            } catch (error) {
+                console.error('Error loading weather:', error);
+                // Fallback to sample data if API fails
+                loadSampleRegionData(regionKey);
+            }
+        }
+
+        function updateCurrentWeather(data) {
+            if (!data.main) return;
+            
+            const temp = Math.round(data.main.temp);
+            const feelsLike = Math.round(data.main.feels_like);
+            const humidity = data.main.humidity;
+            const pressure = data.main.pressure;
+            const windSpeed = Math.round(data.wind.speed * 3.6); // Convert m/s to km/h
+            const visibility = (data.visibility / 1000).toFixed(1);
+            const weatherDesc = data.weather[0].description;
+            const weatherIcon = data.weather[0].icon;
+            const rainChance = data.rain ? data.rain['1h'] || 0 : 0;
+            
+            // Update DOM
+            document.getElementById('currentTemp').textContent = temp;
+            document.getElementById('currentConditionText').textContent = 
+                `${weatherDesc} (Cảm giác như ${feelsLike}°C)`;
+            document.getElementById('humidityValue').textContent = humidity + '%';
+            document.getElementById('windValue').textContent = windSpeed + ' km/h';
+            document.getElementById('pressureValue').textContent = pressure + ' hPa';
+            document.getElementById('visibilityValue').textContent = visibility + ' km';
+            document.getElementById('uvIndex').textContent = getUVLevel(temp);
+            document.getElementById('rainChance').textContent = rainChance > 0 ? Math.min(rainChance * 10, 100) + '%' : '0%';
+            
+            // Update weather icon
+            const iconMap = {
+                '01d': 'sun', '01n': 'moon',
+                '02d': 'cloud-sun', '02n': 'cloud-moon',
+                '03d': 'cloud', '03n': 'cloud',
+                '04d': 'cloud', '04n': 'cloud',
+                '09d': 'cloud-rain', '09n': 'cloud-rain',
+                '10d': 'cloud-sun-rain', '10n': 'cloud-moon-rain',
+                '11d': 'bolt', '11n': 'bolt'
+            };
+            const icon = iconMap[weatherIcon] || 'cloud-sun';
+            document.getElementById('currentConditionIcon').innerHTML = `<i class="fas fa-${icon}"></i>`;
+        }
+
+        function getUVLevel(temp) {
+            if (temp > 35) return 'Rất cao';
+            if (temp > 30) return 'Cao';
+            if (temp > 25) return 'Trung bình';
+            return 'Thấp';
+        }
+
+        function generateWeatherAlerts(data, region) {
+            const alerts = [];
+            const temp = data.main.temp;
+            const windSpeed = data.wind.speed * 3.6;
+            const humidity = data.main.humidity;
+            const weatherId = data.weather[0].id;
+            
+            // Temperature alerts
+            if (temp >= 35) {
+                alerts.push({
+                    type: 'warning-high',
+                    icon: 'fa-temperature-high',
+                    title: 'Cảnh báo nắng nóng gay gắt',
+                    description: `Nhiệt độ lên tới ${Math.round(temp)}°C, có thể gây sốc nhiệt cho cây trồng và vật nuôi. Cần che chắn và tăng cường tưới nước.`,
+                    time: 'Có hiệu lực từ 11:00 - 15:00 hôm nay'
+                });
+            } else if (temp <= 15) {
+                alerts.push({
+                    type: 'warning-medium',
+                    icon: 'fa-temperature-low',
+                    title: 'Cảnh báo nhiệt độ thấp',
+                    description: `Nhiệt độ giảm sâu ${Math.round(temp)}°C, có thể ảnh hưởng đến cây trồng nhiệt đới. Cần che phủ nilon cho rau màu.`,
+                    time: 'Có hiệu lực từ 22:00 - 06:00 sáng mai'
+                });
+            }
+            
+            // Rain alerts
+            if (weatherId >= 500 && weatherId < 600) {
+                alerts.push({
+                    type: 'warning-medium',
+                    icon: 'fa-cloud-rain',
+                    title: 'Cảnh báo mưa rào',
+                    description: 'Khả năng có mưa rào trong chiều tối. Nên thu hoạch nông sản trước khi trời tối và che chắn vật nuôi.',
+                    time: 'Có hiệu lực từ 16:00 - 20:00 hôm nay'
+                });
+            } else if (weatherId >= 200 && weatherId < 300) {
+                alerts.push({
+                    type: 'warning-high',
+                    icon: 'fa-bolt',
+                    title: 'Cảnh báo dông, sét',
+                    description: 'Nguy cơ cao xảy ra dông, sét. Không nên ra đồng trong thời gian này, tắt các thiết bị điện không cần thiết.',
+                    time: 'Có hiệu lực ngay lập tức'
+                });
+            }
+            
+            // Wind alerts
+            if (windSpeed > 50) {
+                alerts.push({
+                    type: 'warning-high',
+                    icon: 'fa-wind',
+                    title: 'Cảnh báo gió mạnh',
+                    description: `Gió giật mạnh ${Math.round(windSpeed)} km/h. Cần gia cố nhà kính, nhà lưới và cột chống cho cây ăn quả.`,
+                    time: 'Có hiệu lực trong 3 giờ tới'
+                });
+            } else if (windSpeed > 30) {
+                alerts.push({
+                    type: 'warning-low',
+                    icon: 'fa-wind',
+                    title: 'Gió mạnh cấp độ nhẹ',
+                    description: 'Gió có cường độ trung bình. Hạn chế phun thuốc BVTV để tránh thuốc bay xa.',
+                    time: 'Có hiệu lực trong ngày'
+                });
+            }
+            
+            // Humidity alerts
+            if (humidity > 85) {
+                alerts.push({
+                    type: 'warning-medium',
+                    icon: 'fa-droplet',
+                    title: 'Độ ẩm cao - Nguy cơ nấm bệnh',
+                    description: 'Độ ẩm cao tạo điều kiện cho nấm bệnh phát triển. Kiểm tra vườn thường xuyên và phun phòng bệnh.',
+                    time: 'Có hiệu lực trong 24 giờ tới'
+                });
+            } else if (humidity < 40) {
+                alerts.push({
+                    type: 'warning-low',
+                    icon: 'fa-droplet',
+                    title: 'Độ ẩm thấp - Nguy cơ khô hạn',
+                    description: 'Độ ẩm thấp làm cây mất nước nhanh. Cần tăng cường tưới phun sương vào sáng sớm và chiều mát.',
+                    time: 'Có hiệu lực trong ngày'
+                });
+            }
+            
+            // Display alerts
+            displayAlerts(alerts);
+        }
+
+        function displayAlerts(alerts) {
+            const container = document.getElementById('weatherAlertsContainer');
+            
+            if (alerts.length === 0) {
+                container.innerHTML = `
+                    <div class="alert-card warning-low">
+                        <div class="alert-icon" style="color:#198754;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="alert-content">
+                            <div class="alert-title">Không có cảnh báo thời tiết</div>
+                            <p>Thời tiết hiện tại thuận lợi cho các hoạt động canh tác.</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = alerts.map(alert => `
+                <div class="alert-card ${alert.type}">
+                    <div class="alert-icon">
+                        <i class="fas ${alert.icon}"></i>
+                    </div>
+                    <div class="alert-content">
+                        <div class="alert-title">
+                            ${alert.title}
+                            <span class="alert-badge">QUAN TRỌNG</span>
+                        </div>
+                        <p>${alert.description}</p>
+                        <div class="alert-time">
+                            <i class="far fa-clock"></i> ${alert.time}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function generateRecommendations(data, region) {
+            const temp = data.main.temp;
+            const humidity = data.main.humidity;
+            const weatherId = data.weather[0].id;
+            const windSpeed = data.wind.speed * 3.6;
+            
+            const recommendations = [
+                {
+                    icon: 'fa-tint',
+                    title: '💧 Tưới tiêu',
+                    content: getIrrigationAdvice(temp, humidity, weatherId),
+                    tag: getTagLevel(temp, humidity, 'irrigation')
+                },
+                {
+                    icon: 'fa-spray-can',
+                    title: '🧴 Phun thuốc BVTV',
+                    content: getSprayingAdvice(weatherId, windSpeed),
+                    tag: getTagLevel(temp, humidity, 'spray')
+                },
+                {
+                    icon: 'fa-seedling',
+                    title: '🌱 Gieo trồng',
+                    content: getPlantingAdvice(region, temp, weatherId),
+                    tag: getTagLevel(temp, humidity, 'planting')
+                },
+                {
+                    icon: 'fa-sickle',
+                    title: '🌾 Thu hoạch',
+                    content: getHarvestAdvice(weatherId, region, temp),
+                    tag: getTagLevel(temp, humidity, 'harvest')
+                },
+                {
+                    icon: 'fa-bug',
+                    title: '🐛 Phòng trừ sâu bệnh',
+                    content: getPestAdvice(humidity, temp, region),
+                    tag: getTagLevel(temp, humidity, 'pest')
+                },
+                {
+                    icon: 'fa-leaf',
+                    title: '🌿 Bón phân',
+                    content: getFertilizerAdvice(weatherId, temp, humidity),
+                    tag: getTagLevel(temp, humidity, 'fertilizer')
+                }
+            ];
+            
+            const grid = document.getElementById('recommendationsGrid');
+            grid.innerHTML = recommendations.map(rec => `
+                <div class="recommendation-card">
+                    <div class="recommendation-icon">
+                        <i class="fas ${rec.icon}"></i>
+                    </div>
+                    <h3>${rec.title}</h3>
+                    <p>${rec.content}</p>
+                    <span class="recommendation-tag">${rec.tag}</span>
+                </div>
+            `).join('');
+        }
+
+        function getTagLevel(temp, humidity, type) {
+            if (temp > 35 || humidity > 90) return '⚠️ Cảnh báo';
+            if (temp > 32 || humidity > 85) return '🔔 Lưu ý';
+            if (temp < 15 || humidity < 40) return '📌 Thận trọng';
+            return '✅ Nên làm';
+        }
+
+        function getIrrigationAdvice(temp, humidity, weatherId) {
+            if (weatherId >= 500 && weatherId < 600) {
+                return 'Trời sắp mưa, tạm ngừng tưới. Tận dụng nước mưa để tiết kiệm.';
+            } else if (temp > 32) {
+                return 'Nắng nóng, cần tưới nước vào sáng sớm (5-7h) và chiều mát (16-18h). Duy trì độ ẩm đất 70-80%.';
+            } else if (temp < 20) {
+                return 'Nhiệt độ thấp, giảm lượng nước tưới. Chỉ tưới khi đất khô, tưới vào 9-10h sáng.';
+            } else if (humidity > 80) {
+                return 'Độ ẩm cao, giảm lượng nước tưới. Kiểm tra độ ẩm đất trước khi tưới.';
+            } else {
+                return 'Duy trì độ ẩm đất 65-75%, tưới 1-2 lần/ngày tùy theo loại cây trồng.';
+            }
+        }
+
+        function getSprayingAdvice(weatherId, windSpeed) {
+            if (weatherId >= 500 && weatherId < 600) {
+                return 'Trời sắp mưa, KHÔNG nên phun thuốc. Thuốc sẽ bị rửa trôi, giảm hiệu quả.';
+            } else if (windSpeed > 20) {
+                return 'Gió mạnh, hạn chế phun thuốc. Nếu cần thiết, phun vào sáng sớm khi gió nhẹ.';
+            } else if (weatherId >= 800) {
+                return 'Thời tiết khô ráo, thuận lợi để phun thuốc. Nên phun vào 7-9h sáng hoặc 15-17h chiều.';
+            } else {
+                return 'Điều kiện trung bình, có thể phun thuốc. Tránh phun khi nắng gắt hoặc sắp mưa.';
+            }
+        }
+
+        function getPlantingAdvice(region, temp, weatherId) {
+            if (weatherId >= 500 && weatherId < 600) {
+                return 'Trời mưa, không nên gieo trồng. Chờ đất ráo vài ngày sau mưa.';
+            } else if (temp > 35) {
+                return 'Nắng nóng gay gắt, chỉ nên gieo trồng trong nhà kính hoặc chọn giống chịu nhiệt.';
+            } else if (temp < 18) {
+                return 'Nhiệt độ thấp, chỉ nên gieo trồng các loại rau chịu lạnh như: cải, xà lách, su hào.';
+            } else {
+                if (region.name === 'Miền Bắc') {
+                    return 'Thích hợp gieo trồng lúa vụ mùa, rau màu các loại. Chuẩn bị đất và xuống giống ngay.';
+                } else if (region.name === 'Tây Nguyên') {
+                    return 'Thời điểm tốt để trồng cà phê, hồ tiêu. Đảm bảo che chắn cho cây con.';
+                } else if (region.name === 'Đồng bằng sông Cửu Long') {
+                    return 'Vụ lúa Hè Thu thích hợp. Có thể trồng thêm rau màu ngắn ngày.';
+                } else {
+                    return 'Điều kiện thích hợp để gieo trồng hầu hết các loại cây. Tham khảo lịch thời vụ địa phương.';
+                }
+            }
+        }
+
+        function getHarvestAdvice(weatherId, region, temp) {
+            if (weatherId >= 500 && weatherId < 600) {
+                return 'Sắp có mưa, cần thu hoạch gấp các loại nông sản đã chín. Che chắn kỹ lúa đã gặt.';
+            } else if (temp > 35) {
+                return 'Nắng nóng, thu hoạch vào sáng sớm (5-8h) để tránh nóng. Bảo quản nông sản nơi thoáng mát.';
+            } else if (weatherId >= 800) {
+                return 'Thời tiết khô ráo, thuận lợi thu hoạch và phơi sấy. Tiến hành thu hoạch diện tích đã chín.';
+            } else {
+                return 'Có thể thu hoạch nhưng cần theo dõi thời tiết. Ưu tiên thu hoạch vào buổi sáng.';
+            }
+        }
+
+        function getPestAdvice(humidity, temp, region) {
+            if (humidity > 85 && temp > 25) {
+                return 'Nguy cơ cao bùng phát rầy nâu, đạo ôn trên lúa. Kiểm tra đồng ruộng hàng ngày.';
+            } else if (humidity > 75 && temp > 28) {
+                return 'Cảnh báo sâu đục thân, sâu cuốn lá. Cần thăm đồng và đặt bẫy đèn.';
+            } else if (region.name === 'Tây Nguyên' && temp > 30) {
+                return 'Chú ý rệp sáp hại cà phê, bọ xít muỗi hại điều. Kiểm tra vườn thường xuyên.';
+            } else if (humidity < 40) {
+                return 'Độ ẩm thấp, ít nguy cơ sâu bệnh. Duy trì vệ sinh đồng ruộng.';
+            } else {
+                return 'Điều kiện bình thường, duy trì các biện pháp phòng trừ định kỳ.';
+            }
+        }
+
+        function getFertilizerAdvice(weatherId, temp, humidity) {
+            if (weatherId >= 500 && weatherId < 600) {
+                return 'Trời sắp mưa, KHÔNG bón phân. Phân sẽ bị rửa trôi gây lãng phí.';
+            } else if (temp > 35) {
+                return 'Nắng nóng gay gắt, giảm 30% lượng phân bón. Bón vào chiều mát kết hợp tưới nước.';
+            } else if (temp > 32) {
+                return 'Nắng nóng, giảm 20% lượng phân đạm. Tăng cường phân kali để cây cứng cáp.';
+            } else if (humidity > 85) {
+                return 'Độ ẩm cao, giảm lượng phân đạm để hạn chế sâu bệnh. Tăng cường phân lân và kali.';
+            } else {
+                return 'Có thể bón phân theo đúng quy trình. Kết hợp bón lót và bón thúc cho cây.';
+            }
+        }
+
+        function updateForecast(forecastData) {
+            if (!forecastData.list) {
+                displaySampleForecast();
+                return;
+            }
+            
+            const container = document.getElementById('detailedForecast');
+            container.innerHTML = '';
+            
+            // Get daily forecast (one per day at noon)
+            const dailyForecasts = [];
+            const seenDays = new Set();
+            
+            forecastData.list.forEach(item => {
+                const date = new Date(item.dt * 1000);
+                const day = date.toLocaleDateString('vi-VN', { weekday: 'short' });
+                const dateStr = `${date.getDate()}/${date.getMonth() + 1}`;
+                
+                if (!seenDays.has(dateStr) && date.getHours() >= 12) {
+                    dailyForecasts.push({
+                        day: day,
+                        date: dateStr,
+                        temp: Math.round(item.main.temp),
+                        tempMin: Math.round(item.main.temp_min),
+                        tempMax: Math.round(item.main.temp_max),
+                        icon: item.weather[0].icon,
+                        description: item.weather[0].description,
+                        rain: item.pop ? Math.round(item.pop * 100) : 0
+                    });
+                    
+                    seenDays.add(dateStr);
+                    
+                    if (dailyForecasts.length >= 7) return;
+                }
+            });
+            
+            // Display forecasts
+            dailyForecasts.forEach(day => {
+                const iconMap = {
+                    '01d': 'sun', '01n': 'moon',
+                    '02d': 'cloud-sun', '02n': 'cloud-moon',
+                    '03d': 'cloud', '03n': 'cloud',
+                    '04d': 'cloud', '04n': 'cloud',
+                    '09d': 'cloud-rain', '09n': 'cloud-rain',
+                    '10d': 'cloud-sun-rain', '10n': 'cloud-moon-rain',
+                    '11d': 'bolt', '11n': 'bolt'
+                };
+                const icon = iconMap[day.icon] || 'cloud-sun';
+                
+                const forecastEl = document.createElement('div');
+                forecastEl.className = 'forecast-day-detailed';
+                forecastEl.innerHTML = `
+                    <div class="forecast-day-name">${day.day}</div>
+                    <div class="forecast-date">${day.date}</div>
+                    <div class="forecast-icon"><i class="fas fa-${icon}"></i></div>
+                    <div class="forecast-temp">${day.temp}°C</div>
+                    <div class="forecast-desc">${day.description}</div>
+                    <div class="forecast-rain">
+                        <i class="fas fa-umbrella"></i> ${day.rain}%
+                    </div>
+                `;
+                container.appendChild(forecastEl);
+            });
+        }
+
+        function displaySampleForecast() {
+            const container = document.getElementById('detailedForecast');
+            container.innerHTML = '';
+            
+            const today = new Date();
+            const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+            
+            for (let i = 0; i < 7; i++) {
+                const date = new Date();
+                date.setDate(today.getDate() + i);
+                const dayName = days[date.getDay()];
+                const dateStr = `${date.getDate()}/${date.getMonth() + 1}`;
+                
+                const temps = [28, 29, 30, 27, 26, 27, 29];
+                const descs = ['Mây thưa', 'Nắng', 'Nắng nóng', 'Mưa rào', 'Mưa to', 'Mây thưa', 'Nắng'];
+                const icons = ['cloud-sun', 'sun', 'sun', 'cloud-rain', 'cloud-showers-heavy', 'cloud-sun', 'sun'];
+                const rains = [10, 0, 0, 60, 80, 20, 0];
+                
+                const forecastEl = document.createElement('div');
+                forecastEl.className = 'forecast-day-detailed';
+                forecastEl.innerHTML = `
+                    <div class="forecast-day-name">${dayName}</div>
+                    <div class="forecast-date">${dateStr}</div>
+                    <div class="forecast-icon"><i class="fas fa-${icons[i]}"></i></div>
+                    <div class="forecast-temp">${temps[i]}°C</div>
+                    <div class="forecast-desc">${descs[i]}</div>
+                    <div class="forecast-rain">
+                        <i class="fas fa-umbrella"></i> ${rains[i]}%
+                    </div>
+                `;
+                container.appendChild(forecastEl);
+            }
+        }
+
+        async function updateRegionalComparison(activeRegion) {
+            const regionList = ['north', 'central', 'south', 'highlands', 'mekong'];
+            const regionNames = {
+                north: 'Miền Bắc',
+                central: 'Miền Trung',
+                south: 'Miền Nam',
+                highlands: 'Tây Nguyên',
+                mekong: 'ĐBSCL'
+            };
+            
+            const comparisonData = [];
+            
+            for (const regionKey of regionList) {
+                try {
+                    const region = regions[regionKey];
+                    const city = region.city;
+                    
+                    const response = await fetch(
+                        `https://api.openweathermap.org/data/2.5/weather?q=${city},VN&units=metric&appid=${API_KEY}&lang=vi`
+                    );
+                    const data = await response.json();
+                    
+                    comparisonData.push({
+                        region: regionNames[regionKey],
+                        temp: Math.round(data.main.temp),
+                        weather: data.weather[0].description,
+                        humidity: data.main.humidity,
+                        alert: getAlertLevel(data)
+                    });
+                } catch (error) {
+                    // Sample data if API fails
+                    const sampleTemps = { north: 28, central: 32, south: 30, highlands: 24, mekong: 29 };
+                    const sampleWeather = { 
+                        north: 'Mây thưa', central: 'Nắng nóng', south: 'Mây thưa', 
+                        highlands: 'Mưa rào', mekong: 'Nắng nhẹ' 
+                    };
+                    const sampleHumidity = { north: 65, central: 60, south: 75, highlands: 85, mekong: 78 };
+                    
+                    comparisonData.push({
+                        region: regionNames[regionKey],
+                        temp: sampleTemps[regionKey],
+                        weather: sampleWeather[regionKey],
+                        humidity: sampleHumidity[regionKey],
+                        alert: getSampleAlertLevel(regionKey)
+                    });
+                }
+            }
+            
+            const table = document.getElementById('comparisonTable');
+            table.innerHTML = `
+                <div class="comparison-row comparison-header">
+                    <div>Vùng miền</div>
+                    <div>Nhiệt độ</div>
+                    <div>Thời tiết</div>
+                    <div>Độ ẩm</div>
+                    <div>Cảnh báo</div>
+                </div>
+                ${comparisonData.map((data, index) => {
+                    const isSelected = regionList[index] === activeRegion;
+                    return `
+                        <div class="comparison-row ${isSelected ? 'region-highlight' : ''}">
+                            <div><i class="fas fa-map-marker-alt weather-icon-small"></i>${data.region}</div>
+                            <div>${data.temp}°C</div>
+                            <div>${data.weather}</div>
+                            <div>${data.humidity}%</div>
+                            <div>${data.alert}</div>
+                        </div>
+                    `;
+                }).join('')}
+            `;
+        }
+
+        function getAlertLevel(data) {
+            if (!data.main) return 'N/A';
+            
+            const temp = data.main.temp;
+            const weatherId = data.weather[0].id;
+            
+            if (temp > 35) return '🔥 Nắng nóng';
+            if (temp < 15) return '❄️ Lạnh';
+            if (weatherId >= 500 && weatherId < 600) return '☔ Mưa';
+            if (data.wind && data.wind.speed * 3.6 > 50) return '💨 Gió mạnh';
+            
+            return '✓ Bình thường';
+        }
+
+        function getSampleAlertLevel(regionKey) {
+            const alerts = {
+                north: '❄️ Lạnh',
+                central: '🔥 Nắng nóng',
+                south: '✓ Bình thường',
+                highlands: '☔ Mưa',
+                mekong: '☔ Mưa'
+            };
+            return alerts[regionKey];
+        }
+
+        function updateFarmingCalendar(currentData, region) {
+            const calendar = document.getElementById('farmingCalendar');
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            let calendarHtml = '';
+            
+            // Get first day of month (0 = Sunday, 1 = Monday, etc.)
+            const firstDay = new Date(year, month, 1).getDay();
+            
+            // Add empty cells for days before month starts
+            for (let i = 0; i < firstDay; i++) {
+                calendarHtml += `<div class="calendar-day" style="opacity:0.3;"></div>`;
+            }
+            
+            for (let i = 1; i <= daysInMonth; i++) {
+                const date = new Date(year, month, i);
+                const isToday = i === today.getDate();
+                const dayOfWeek = date.getDay();
+                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                
+                // Generate activities based on weather and date
+                let activities = [];
+                
+                if (isToday) {
+                    // Today's activities based on weather
+                    if (currentData.main.temp > 32) {
+                        activities.push('🌊 Tưới nước');
+                    }
+                    if (currentData.weather[0].id >= 500 && currentData.weather[0].id < 600) {
+                        activities.push('☔ Tránh phun thuốc');
+                    } else {
+                        activities.push('🌱 Bón phân');
+                    }
+                }
+                
+                // Weekend activities
+                if (isWeekend) {
+                    activities.push('🧹 Vệ sinh đồng ruộng');
+                }
+                
+                // Monthly activities
+                if (i === 1) {
+                    activities.push('📅 Đầu tháng - Bón lót');
+                } else if (i === 15) {
+                    activities.push('📅 Giữa tháng - Bón thúc');
+                }
+                
+                calendarHtml += `
+                    <div class="calendar-day ${isToday ? 'today' : ''}">
+                        <div class="calendar-day-number">${i}</div>
+                        ${activities.slice(0, 2).map(act => 
+                            `<div class="calendar-activity ${act.includes('Tránh') || act.includes('⚠️') ? 'warning' : ''}">${act}</div>`
+                        ).join('')}
+                    </div>
+                `;
+            }
+            
+            calendar.innerHTML = calendarHtml;
+        }
+
+        function loadSampleRegionData(regionKey) {
+            // Sample data for fallback
+            const sampleData = {
+                north: { temp: 28, desc: 'Mây thưa', humidity: 65, wind: 12, icon: 'cloud-sun', weatherId: 801 },
+                central: { temp: 32, desc: 'Nắng nóng', humidity: 60, wind: 15, icon: 'sun', weatherId: 800 },
+                south: { temp: 30, desc: 'Mây thưa', humidity: 75, wind: 10, icon: 'cloud-sun', weatherId: 802 },
+                highlands: { temp: 24, desc: 'Mưa rào', humidity: 85, wind: 8, icon: 'cloud-rain', weatherId: 500 },
+                mekong: { temp: 29, desc: 'Nắng nhẹ', humidity: 78, wind: 11, icon: 'cloud-sun', weatherId: 801 }
+            };
+            
+            const data = sampleData[regionKey];
+            const region = regions[regionKey];
+            
+            // Mock data object
+            const mockData = {
+                main: {
+                    temp: data.temp,
+                    feels_like: data.temp - 1,
+                    humidity: data.humidity,
+                    pressure: 1013
+                },
+                wind: {
+                    speed: data.wind / 3.6
+                },
+                visibility: 10000,
+                weather: [{
+                    description: data.desc,
+                    icon: data.icon === 'sun' ? '01d' : 
+                          data.icon === 'cloud-sun' ? '02d' :
+                          data.icon === 'cloud-rain' ? '10d' : '02d',
+                    id: data.weatherId
+                }]
+            };
+            
+            // Update UI
+            document.getElementById('currentTemp').textContent = data.temp;
+            document.getElementById('currentConditionText').textContent = data.desc;
+            document.getElementById('humidityValue').textContent = data.humidity + '%';
+            document.getElementById('windValue').textContent = data.wind + ' km/h';
+            document.getElementById('pressureValue').textContent = '1013 hPa';
+            document.getElementById('visibilityValue').textContent = '10 km';
+            document.getElementById('uvIndex').textContent = getUVLevel(data.temp);
+            document.getElementById('rainChance').textContent = regionKey === 'highlands' ? '60%' : '10%';
+            
+            document.getElementById('currentConditionIcon').innerHTML = `<i class="fas fa-${data.icon}"></i>`;
+            
+            // Generate sample alerts
+            generateSampleAlerts(regionKey, mockData);
+            
+            // Generate sample recommendations
+            generateRecommendations(mockData, region);
+            
+            // Update forecast
+            displaySampleForecast();
+            
+            // Update regional comparison
+            updateRegionalComparison(regionKey);
+            
+            // Update farming calendar
+            updateFarmingCalendar(mockData, region);
+            
+            // Update time
+            const now = new Date();
+            document.getElementById('updateTime').innerHTML = `
+                <i class="far fa-clock"></i>
+                <span>Cập nhật: ${now.toLocaleTimeString('vi-VN')} (dữ liệu mẫu)</span>
+            `;
+        }
+
+        function generateSampleAlerts(regionKey, data) {
+            const alerts = {
+                north: [{
+                    type: 'warning-medium',
+                    icon: 'fa-temperature-low',
+                    title: 'Cảnh báo không khí lạnh',
+                    description: 'Không khí lạnh tràn về, nhiệt độ giảm sâu vào đêm và sáng sớm. Cần che chắn cho mạ mới gieo.',
+                    time: 'Có hiệu lực từ đêm nay'
+                }],
+                central: [{
+                    type: 'warning-high',
+                    icon: 'fa-temperature-high',
+                    title: 'Cảnh báo nắng nóng',
+                    description: 'Nắng nóng gay gắt, nhiệt độ lên tới 38°C. Hạn chế ra đồng giữa trưa.',
+                    time: 'Có hiệu lực từ 10:00 - 16:00'
+                }],
+                south: [{
+                    type: 'warning-low',
+                    icon: 'fa-cloud-rain',
+                    title: 'Mưa rào chiều tối',
+                    description: 'Khả năng có mưa rào vào chiều tối. Nên thu hoạch nông sản trước 17h.',
+                    time: 'Dự kiến 17:00 - 20:00'
+                }],
+                highlands: [{
+                    type: 'warning-medium',
+                    icon: 'fa-cloud-rain',
+                    title: 'Mưa kéo dài',
+                    description: 'Mưa có thể kéo dài 2-3 ngày. Kiểm tra hệ thống thoát nước cho vườn cà phê.',
+                    time: 'Có hiệu lực từ hôm nay'
+                }],
+                mekong: [{
+                    type: 'warning-low',
+                    icon: 'fa-droplet',
+                    title: 'Độ ẩm cao',
+                    description: 'Độ ẩm >85% tạo điều kiện cho nấm bệnh. Phun phòng bệnh cho lúa Hè Thu.',
+                    time: 'Có hiệu lực 24h tới'
+                }]
+            };
+            
+            displayAlerts(alerts[regionKey] || []);
+        }
+    </script>
+</body>
+</html>

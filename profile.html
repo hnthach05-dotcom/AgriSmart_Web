@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang cá nhân - AgriSmart</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Profile Page Styles */
+        .profile-page {
+            margin-bottom: 60px;
+        }
+        
+        .profile-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9f5e9 100%);
+            border-radius: var(--border-radius);
+        }
+        
+        .profile-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .profile-header p {
+            color: var(--gray-color);
+            margin-bottom: 0;
+        }
+        
+        .profile-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Sidebar */
+        .profile-sidebar {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        
+        .avatar-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+        }
+        
+        .profile-avatar-large {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid var(--primary-color);
+            object-fit: cover;
+            background-color: #f1f3f5;
+        }
+        
+        .avatar-placeholder {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid var(--primary-color);
+            background-color: #f1f3f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+        
+        .avatar-placeholder i {
+            font-size: 5rem;
+            color: #adb5bd;
+        }
+        
+        .change-avatar-btn {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+        
+        .change-avatar-btn:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.1);
+        }
+        
+        .change-avatar-btn i {
+            font-size: 1.2rem;
+        }
+        
+        .profile-name {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: var(--dark-color);
+        }
+        
+        .profile-email {
+            color: var(--gray-color);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+        
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        .profile-stat-item {
+            text-align: center;
+        }
+        
+        .profile-stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .profile-stat-label {
+            font-size: 0.85rem;
+            color: var(--gray-color);
+        }
+        
+        .profile-bio-display {
+            font-size: 0.95rem;
+            color: var(--gray-color);
+            margin-bottom: 20px;
+            padding: 15px;
+            line-height: 1.5;
+            text-align: left;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .profile-join-date {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        /* Main Content */
+        .profile-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+        
+        .profile-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+        
+        .profile-tab {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            color: var(--gray-color);
+            cursor: pointer;
+            border-radius: 30px;
+            transition: var(--transition);
+        }
+        
+        .profile-tab:hover {
+            color: var(--primary-color);
+            background-color: #e9f5e9;
+        }
+        
+        .profile-tab.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Form Styles */
+        .profile-form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        @media (max-width: 576px) {
+            .profile-form {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: var(--dark-color);
+        }
+        
+        .profile-input-group {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: var(--transition);
+            background-color: white;
+        }
+        
+        .profile-input-group:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(43,138,62,0.1);
+        }
+        
+        .profile-input-icon {
+            padding: 0 15px;
+            background-color: #f8f9fa;
+            color: var(--gray-color);
+            font-size: 1rem;
+        }
+        
+        .profile-input-group input,
+        .profile-input-group select,
+        .profile-input-group textarea {
+            flex: 1;
+            padding: 12px 0;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            background: transparent;
+            font-size: 0.95rem;
+        }
+        
+        .profile-input-group input::placeholder,
+        .profile-input-group textarea::placeholder {
+            color: #adb5bd;
+        }
+        
+        .profile-input-group textarea {
+            min-height: 100px;
+            resize: vertical;
+            padding: 12px 0;
+        }
+        
+        .profile-input-group select {
+            cursor: pointer;
+            background-color: transparent;
+        }
+        
+        .profile-save-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+        
+        .profile-save-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .profile-save-btn i {
+            font-size: 1.1rem;
+        }
+        
+        /* Activity Tab - Tính năng đang phát triển */
+        .developing-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray-color);
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+        }
+        
+        .developing-message i {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .developing-message h3 {
+            margin-bottom: 10px;
+            color: var(--dark-color);
+            font-size: 1.5rem;
+        }
+        
+        .developing-message p {
+            margin-bottom: 0;
+            font-size: 1rem;
+            color: var(--gray-color);
+        }
+        
+        /* Success Message */
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px 25px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .success-message i {
+            font-size: 1.2rem;
+            color: #28a745;
+        }
+        
+        .success-message.fade-out {
+            animation: fadeOut 0.3s ease forwards;
+        }
+        
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+        }
+        
+        /* Avatar Upload Modal */
+        .avatar-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .avatar-modal-content {
+            background-color: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .avatar-modal-content h3 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .avatar-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            border: 3px solid var(--primary-color);
+            background-color: #f1f3f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .avatar-preview i {
+            font-size: 4rem;
+            color: #adb5bd;
+        }
+        
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .avatar-upload-input {
+            display: none;
+        }
+        
+        .avatar-upload-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: var(--transition);
+        }
+        
+        .avatar-upload-label:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .avatar-modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .avatar-modal-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .avatar-modal-btn.save {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .avatar-modal-btn.save:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .avatar-modal-btn.cancel {
+            background-color: #f1f3f5;
+            color: var(--gray-color);
+        }
+        
+        .avatar-modal-btn.cancel:hover {
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">Agri<span>Smart</span></div>
+        
+        <nav>
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home"></i> Trang chủ</a></li>
+                <li><a href="weather.html"><i class="fas fa-cloud-sun"></i> Thời tiết</a></li>
+                <li><a href="prices.html"><i class="fas fa-chart-line"></i> Giá cả</a></li>
+                <li><a href="knowledge.html"><i class="fas fa-book"></i> Kiến thức</a></li>
+                <li><a href="community.html"><i class="fas fa-users"></i> Cộng đồng</a></li>
+            </ul>
+        </nav>
+        
+        <div class="header-right">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Tìm kiếm..." id="searchInput">
+            </div>
+            
+            <div class="notification" id="notificationBtn">
+                <i class="fas fa-bell"></i>
+            </div>
+            
+            <div class="user-profile" id="userMenuContainer"></div>
+        </div>
+    </header>
+
+    <!-- PROFILE PAGE -->
+    <main class="profile-page">
+        <div class="profile-header">
+            <h1><i class="fas fa-user-circle"></i> Trang cá nhân</h1>
+            <p>Quản lý thông tin cá nhân và theo dõi hoạt động của bạn trên AgriSmart</p>
+        </div>
+
+        <div class="profile-container" id="profileContainer">
+            <div class="loading">Đang tải thông tin...</div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">Agri<span>Smart</span></div>
+                    <p>Nền tảng nông nghiệp thông minh hàng đầu Việt Nam, kết nối nhà nông với công nghệ và thị trường.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-zalo"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h3>Liên kết nhanh</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html"><i class="fas fa-chevron-right"></i> Trang chủ</a></li>
+                        <li><a href="weather.html"><i class="fas fa-chevron-right"></i> Thời tiết</a></li>
+                        <li><a href="prices.html"><i class="fas fa-chevron-right"></i> Giá nông sản</a></li>
+                        <li><a href="knowledge.html"><i class="fas fa-chevron-right"></i> Kiến thức</a></li>
+                        <li><a href="community.html"><i class="fas fa-chevron-right"></i> Cộng đồng</a></li>
+                        <li><a href="profile.html"><i class="fas fa-chevron-right"></i> Trang cá nhân</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Liên hệ</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i><span>123 Nguyễn Văn Linh, Quận 7, TP.HCM</span></li>
+                        <li><i class="fas fa-phone-alt"></i><span>1800-1234 (Miễn phí)</span></li>
+                        <li><i class="fas fa-envelope"></i><span>info@agrismart.vn</span></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Tải ứng dụng</h3>
+                    <p>Ứng dụng AgriSmart có mặt trên:</p>
+                    <div class="app-buttons">
+                        <a href="#" class="app-btn"><i class="fab fa-google-play"></i> Google Play</a>
+                        <a href="#" class="app-btn"><i class="fab fa-apple"></i> App Store</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 AgriSmart - Nông Nghiệp Thông Minh. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedUser = localStorage.getItem('agri_user') || sessionStorage.getItem('agri_user');
+            
+            if (!savedUser) {
+                alert('Vui lòng đăng nhập để xem trang cá nhân');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            updateUserMenu();
+            loadProfileData();
+            
+            document.getElementById('notificationBtn').addEventListener('click', function() {
+                showNotificationModal();
+            });
+        });
+
+        function updateUserMenu() {
+            const userContainer = document.getElementById('userMenuContainer');
+            const savedUser = localStorage.getItem('agri_user') || sessionStorage.getItem('agri_user');
+            
+            if (savedUser) {
+                const userData = JSON.parse(savedUser);
+                
+                let avatarHtml = '';
+                if (userData.avatar) {
+                    avatarHtml = `<img src="${userData.avatar}" alt="${userData.name}" class="user-avatar">`;
+                } else {
+                    avatarHtml = `<div class="user-avatar" style="background-color: #f1f3f5; display: flex; align-items: center; justify-content: center;"><i class="fas fa-user-circle" style="font-size: 2rem; color: #adb5bd;"></i></div>`;
+                }
+                
+                let dropdownAvatarHtml = '';
+                if (userData.avatar) {
+                    dropdownAvatarHtml = `<img src="${userData.avatar}" alt="${userData.name}">`;
+                } else {
+                    dropdownAvatarHtml = `<div style="width: 50px; height: 50px; border-radius: 50%; background-color: #f1f3f5; display: flex; align-items: center; justify-content: center;"><i class="fas fa-user-circle" style="font-size: 2.5rem; color: #adb5bd;"></i></div>`;
+                }
+                
+                userContainer.innerHTML = `
+                    <div class="user-profile" onclick="toggleUserDropdown(event)">
+                        ${avatarHtml}
+                        <div class="user-dropdown">
+                            <div class="dropdown-header">
+                                ${dropdownAvatarHtml}
+                                <div class="user-info">
+                                    <h4>${userData.name}</h4>
+                                    <p>${userData.email}</p>
+                                </div>
+                            </div>
+                            <ul class="dropdown-menu">
+                                <li><a href="profile.html"><i class="fas fa-user"></i> Trang cá nhân</a></li>
+                            </ul>
+                            <div class="dropdown-footer">
+                                <a href="#" onclick="logout(); return false;" class="logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function toggleUserDropdown(event) {
+            event.stopPropagation();
+            event.currentTarget.classList.toggle('active');
+        }
+
+        document.addEventListener('click', function() {
+            const userProfile = document.querySelector('.user-profile');
+            if (userProfile) userProfile.classList.remove('active');
+        });
+
+        function logout() {
+            localStorage.removeItem('agri_user');
+            sessionStorage.removeItem('agri_user');
+            window.location.href = 'index.html';
+        }
+
+        function showNotificationModal() {
+            const modal = document.createElement('div');
+            modal.className = 'notification-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Thông báo</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="developing-content">
+                        <div class="developing-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="developing-title">Tính năng đang phát triển</div>
+                        <div class="developing-text">
+                            Chức năng thông báo sẽ được cập nhật trong thời gian tới.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-ok" onclick="this.closest('.notification-modal').remove()">Đã hiểu</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            const closeBtn = modal.querySelector('.close-modal');
+            closeBtn.addEventListener('click', function() {
+                document.body.removeChild(modal);
+            });
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+
+        function loadProfileData() {
+            const savedUser = JSON.parse(localStorage.getItem('agri_user') || sessionStorage.getItem('agri_user'));
+            
+            let profileData = localStorage.getItem('agri_profile');
+            
+            if (!profileData) {
+                profileData = {
+                    name: savedUser.name,
+                    email: savedUser.email,
+                    avatar: null,
+                    phone: '',
+                    address: '',
+                    province: '',
+                    farmType: '',
+                    farmSize: '',
+                    bio: 'Chưa có giới thiệu',
+                    joinDate: new Date().toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })
+                };
+                localStorage.setItem('agri_profile', JSON.stringify(profileData));
+            } else {
+                profileData = JSON.parse(profileData);
+            }
+            
+            displayProfile(profileData);
+        }
+
+        function displayProfile(profile) {
+            const container = document.getElementById('profileContainer');
+            
+            let avatarHtml = '';
+            if (profile.avatar) {
+                avatarHtml = `<img src="${profile.avatar}" alt="${profile.name}" class="profile-avatar-large" id="profileAvatar">`;
+            } else {
+                avatarHtml = `<div class="avatar-placeholder" id="profileAvatar"><i class="fas fa-user-circle"></i></div>`;
+            }
+            
+            container.innerHTML = `
+                <div class="profile-sidebar">
+                    <div class="avatar-container">
+                        ${avatarHtml}
+                        <div class="change-avatar-btn" onclick="openAvatarModal()">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                    
+                    <h2 class="profile-name" id="profileName">${profile.name}</h2>
+                    <p class="profile-email" id="profileEmail">${profile.email}</p>
+                    
+                    <div class="profile-stats">
+                        <div class="profile-stat-item">
+                            <div class="profile-stat-value">0</div>
+                            <div class="profile-stat-label">Bài viết</div>
+                        </div>
+                        <div class="profile-stat-item">
+                            <div class="profile-stat-value">0</div>
+                            <div class="profile-stat-label">Bình luận</div>
+                        </div>
+                        <div class="profile-stat-item">
+                            <div class="profile-stat-value">0</div>
+                            <div class="profile-stat-label">Năm</div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-bio-display" id="profileBioDisplay">
+                        ${profile.bio || 'Chưa có giới thiệu'}
+                    </div>
+                    
+                    <div class="profile-join-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Tham gia: ${profile.joinDate}</span>
+                    </div>
+                </div>
+                
+                <div class="profile-content">
+                    <div class="profile-tabs">
+                        <button class="profile-tab active" onclick="switchProfileTab('info')">Thông tin cá nhân</button>
+                        <button class="profile-tab" onclick="switchProfileTab('activity')">Hoạt động</button>
+                    </div>
+                    
+                    <div id="profileInfoTab">
+                        <form class="profile-form" id="profileForm">
+                            <div class="form-group">
+                                <label for="fullName">Họ và tên</label>
+                                <div class="profile-input-group">
+                                    <span class="profile-input-icon"><i class="fas fa-user"></i></span>
+                                    <input type="text" id="fullName" value="${profile.name}" placeholder="Nhập họ và tên" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="profilePhone">Số điện thoại</label>
+                                <div class="profile-input-group">
+                                    <span class="profile-input-icon"><i class="fas fa-phone"></i></span>
+                                    <input type="tel" id="profilePhone" value="${profile.phone || ''}" placeholder="Nhập số điện thoại">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="profileAddress">Địa chỉ</label>
+                                <div class="profile-input-group">
+                                    <span class="profile-input-icon"><i class="fas fa-map-marker-alt"></i></span>
+                                    <input type="text" id="profileAddress" value="${profile.address || ''}" placeholder="Nhập địa chỉ">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="profileProvince">Tỉnh/Thành phố</label>
+                                <div class="profile-input-group">
+                                    <span class="profile-input-icon"><i class="fas fa-city"></i></span>
+                                    <select id="profileProvince">
+                                        <option value="">Chọn tỉnh/thành phố</option>
+                                        <option value="hcm" ${profile.province === 'hcm' ? 'selected' : ''}>TP. Hồ Chí Minh</option>
+                                        <option value="hn" ${profile.province === 'hn' ? 'selected' : ''}>Hà Nội</option>
+                                        <option value="dn" ${profile.province === 'dn' ? 'selected' : ''}>Đà Nẵng</option>
+                                        <option value="ct" ${profile.province === 'ct' ? 'selected' : ''}>Cần Thơ</option>
+                                        <option value="ag" ${profile.province === 'ag' ? 'selected' : ''}>An Giang</option>
+                                        <option value="tg" ${profile.province === 'tg' ? 'selected' : ''}>Tiền Giang</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="farmType">Loại hình canh tác</label>
+                                <div class="profile-input-group">
+                                    <span class="profile-input-icon"><i class="fas fa-seedling"></i></span>
+                                    <select id="farmType">
+                                        <option value="">Chọn loại hình</option>
+                                        <option value="rice" ${profile.farmType === 'rice' ? 'selected' : ''}>Trồng lúa</option>
+                                        <option value="fruit" ${profile.farmType === 'fruit' ? 'selected' : ''}>Cây ăn trái</option>
+                                        <option value="vegetable" ${profile.farmType === 'vegetable' ? 'selected' : ''}>Rau màu</option>
+                                        <option value="industrial" ${profile.farmType === 'industrial' ? 'selected' : ''}>Cây công nghiệp</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="farmSize">Diện tích canh tác (ha)</label>
+                                <div class="profile-input-group">
+                                    <span class="profile-input-icon"><i class="fas fa-chart-area"></i></span>
+                                    <input type="text" id="farmSize" value="${profile.farmSize || ''}" placeholder="Ví dụ: 2.5">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label for="profileBio">Giới thiệu bản thân</label>
+                                <div class="profile-input-group">
+                                    <span class="profile-input-icon"><i class="fas fa-pencil-alt"></i></span>
+                                    <textarea id="profileBio" placeholder="Giới thiệu về bạn...">${profile.bio === 'Chưa có giới thiệu' ? '' : profile.bio}</textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <button type="button" class="profile-save-btn" onclick="saveProfile()">
+                                    <i class="fas fa-save"></i> Lưu thông tin
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div id="profileActivityTab" style="display: none;">
+                        <div class="developing-message">
+                            <i class="fas fa-tools"></i>
+                            <h3>Tính năng đang phát triển</h3>
+                            <p>Chức năng theo dõi hoạt động sẽ sớm được cập nhật.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function switchProfileTab(tab) {
+            const infoTab = document.getElementById('profileInfoTab');
+            const activityTab = document.getElementById('profileActivityTab');
+            const tabs = document.querySelectorAll('.profile-tab');
+            
+            if (tab === 'info') {
+                infoTab.style.display = 'block';
+                activityTab.style.display = 'none';
+                tabs[0].classList.add('active');
+                tabs[1].classList.remove('active');
+            } else {
+                infoTab.style.display = 'none';
+                activityTab.style.display = 'block';
+                tabs[0].classList.remove('active');
+                tabs[1].classList.add('active');
+            }
+        }
+
+        function saveProfile() {
+            const profileData = {
+                name: document.getElementById('fullName').value,
+                email: document.getElementById('profileEmail').textContent,
+                avatar: document.getElementById('profileAvatar')?.src || null,
+                phone: document.getElementById('profilePhone').value,
+                address: document.getElementById('profileAddress').value,
+                province: document.getElementById('profileProvince').value,
+                farmType: document.getElementById('farmType').value,
+                farmSize: document.getElementById('farmSize').value,
+                bio: document.getElementById('profileBio').value || 'Chưa có giới thiệu',
+                joinDate: document.querySelector('.profile-join-date span').textContent.replace('Tham gia: ', '')
+            };
+            
+            localStorage.setItem('agri_profile', JSON.stringify(profileData));
+            
+            const savedUser = JSON.parse(localStorage.getItem('agri_user') || sessionStorage.getItem('agri_user'));
+            if (savedUser) {
+                savedUser.name = profileData.name;
+                if (localStorage.getItem('agri_user')) {
+                    localStorage.setItem('agri_user', JSON.stringify(savedUser));
+                } else {
+                    sessionStorage.setItem('agri_user', JSON.stringify(savedUser));
+                }
+            }
+            
+            document.getElementById('profileBioDisplay').textContent = profileData.bio;
+            document.getElementById('profileName').textContent = profileData.name;
+            
+            showSuccessMessage('Lưu thông tin thành công!');
+        }
+
+        function openAvatarModal() {
+            const modal = document.createElement('div');
+            modal.className = 'avatar-modal';
+            modal.id = 'avatarModal';
+            
+            const avatarElement = document.getElementById('profileAvatar');
+            const currentAvatar = avatarElement?.src || null;
+            
+            let previewHtml = '';
+            if (currentAvatar) {
+                previewHtml = `<img src="${currentAvatar}">`;
+            } else {
+                previewHtml = '<i class="fas fa-user-circle"></i>';
+            }
+            
+            modal.innerHTML = `
+                <div class="avatar-modal-content">
+                    <h3><i class="fas fa-camera"></i> Đổi ảnh đại diện</h3>
+                    
+                    <div class="avatar-preview" id="avatarPreview">
+                        ${previewHtml}
+                    </div>
+                    
+                    <input type="file" id="avatarUpload" class="avatar-upload-input" accept="image/*">
+                    <label for="avatarUpload" class="avatar-upload-label">
+                        <i class="fas fa-cloud-upload-alt"></i> Chọn ảnh
+                    </label>
+                    
+                    <div class="avatar-modal-buttons">
+                        <button class="avatar-modal-btn save" onclick="saveAvatar()">
+                            <i class="fas fa-check"></i> Lưu
+                        </button>
+                        <button class="avatar-modal-btn cancel" onclick="closeAvatarModal()">
+                            <i class="fas fa-times"></i> Hủy
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            document.getElementById('avatarUpload').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const preview = document.getElementById('avatarPreview');
+                        preview.innerHTML = `<img src="${event.target.result}">`;
+                        window.tempAvatar = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeAvatarModal();
+                }
+            });
+        }
+        
+        function closeAvatarModal() {
+            const modal = document.getElementById('avatarModal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+            delete window.tempAvatar;
+        }
+        
+        function saveAvatar() {
+            if (window.tempAvatar) {
+                const profileData = JSON.parse(localStorage.getItem('agri_profile'));
+                profileData.avatar = window.tempAvatar;
+                localStorage.setItem('agri_profile', JSON.stringify(profileData));
+                
+                const savedUser = JSON.parse(localStorage.getItem('agri_user') || sessionStorage.getItem('agri_user'));
+                if (savedUser) {
+                    savedUser.avatar = window.tempAvatar;
+                    if (localStorage.getItem('agri_user')) {
+                        localStorage.setItem('agri_user', JSON.stringify(savedUser));
+                    } else {
+                        sessionStorage.setItem('agri_user', JSON.stringify(savedUser));
+                    }
+                }
+                
+                const avatarContainer = document.querySelector('.avatar-container');
+                avatarContainer.innerHTML = `
+                    <img src="${window.tempAvatar}" alt="${profileData.name}" class="profile-avatar-large" id="profileAvatar">
+                    <div class="change-avatar-btn" onclick="openAvatarModal()">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                `;
+                
+                showSuccessMessage('Cập nhật ảnh đại diện thành công!');
+                closeAvatarModal();
+            } else {
+                alert('Vui lòng chọn ảnh trước khi lưu');
+            }
+        }
+
+        function showSuccessMessage(message) {
+            const oldMessage = document.querySelector('.success-message');
+            if (oldMessage) {
+                oldMessage.remove();
+            }
+            
+            const messageEl = document.createElement('div');
+            messageEl.className = 'success-message';
+            messageEl.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(messageEl);
+            
+            setTimeout(() => {
+                messageEl.classList.add('fade-out');
+                setTimeout(() => {
+                    if (messageEl.parentNode) {
+                        messageEl.remove();
+                    }
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

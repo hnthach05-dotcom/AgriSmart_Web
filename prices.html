@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giá nông sản thị trường theo vùng miền - AgriSmart</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js for price charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* Page specific styles */
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9f5e9 100%);
+            border-radius: var(--border-radius);
+        }
+        
+        /* Region selector */
+        .region-selector-container {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9f5e9 100%);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .region-selector-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--dark-color);
+        }
+        
+        .region-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .region-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: white;
+            color: var(--dark-color);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .region-btn i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        
+        .region-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .region-btn:hover i {
+            color: white;
+        }
+        
+        .region-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .region-btn.active i {
+            color: white;
+        }
+        
+        .current-region-info {
+            background-color: white;
+            border-radius: 50px;
+            padding: 12px 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            box-shadow: var(--shadow);
+        }
+        
+        .current-region-info i {
+            color: var(--primary-color);
+        }
+        
+        /* Weather impact card */
+        .weather-impact-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .weather-impact-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+        
+        .weather-impact-content {
+            flex: 1;
+        }
+        
+        .weather-impact-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .weather-impact-desc {
+            color: var(--gray-color);
+            font-size: 0.95rem;
+        }
+        
+        /* Market overview */
+        .market-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .overview-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .overview-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .overview-icon {
+            width: 60px;
+            height: 60px;
+            background-color: #e9f5e9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+        
+        .overview-content h3 {
+            font-size: 0.95rem;
+            color: var(--gray-color);
+            margin-bottom: 8px;
+        }
+        
+        .overview-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .overview-change {
+            font-size: 0.9rem;
+        }
+        
+        /* Price chart */
+        .price-chart-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .chart-header h2 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chart-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .product-selector {
+            padding: 10px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-family: 'Inter', sans-serif;
+            background-color: white;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-note {
+            padding: 15px;
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Category filters - ĐÃ DI CHUYỂN XUỐNG SAU BIỂU ĐỒ */
+        .category-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            justify-content: center;
+        }
+        
+        .category-btn {
+            padding: 12px 25px;
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            background-color: white;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .category-btn i {
+            color: var(--primary-color);
+        }
+        
+        .category-btn:hover {
+            background-color: #e9f5e9;
+            border-color: var(--primary-color);
+        }
+        
+        .category-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .category-btn.active i {
+            color: white;
+        }
+        
+        /* Price table */
+        .price-section {
+            margin-bottom: 50px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .update-time {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .price-table-container {
+            overflow-x: auto;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+        
+        .price-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .price-table th {
+            background-color: #f8f9fa;
+            padding: 16px;
+            font-weight: 600;
+            text-align: left;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .price-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .price-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .price-table tr.category-header {
+            background-color: #e9f5e9;
+            font-weight: 600;
+        }
+        
+        .price-table tr.category-header td {
+            padding: 10px 16px;
+            color: var(--primary-color);
+        }
+        
+        .price-up {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .price-down {
+            color: #E03131;
+            font-weight: 600;
+        }
+        
+        .trend-stable {
+            color: #ffc107;
+            font-weight: 600;
+        }
+        
+        /* Regional price comparison */
+        .regional-comparison {
+            margin-bottom: 40px;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        .region-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .region-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .region-card.highlight {
+            border: 2px solid var(--primary-color);
+            background-color: #e9f5e9;
+        }
+        
+        .region-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .region-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .region-weather {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+        
+        .region-price-list {
+            list-style: none;
+        }
+        
+        .region-price-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        
+        .region-price-item:last-child {
+            border-bottom: none;
+        }
+        
+        .product-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .product-icon {
+            width: 24px;
+            color: var(--primary-color);
+        }
+        
+        /* Price forecast */
+        .price-forecast {
+            margin-bottom: 40px;
+        }
+        
+        .forecast-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+        
+        .forecast-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .forecast-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .forecast-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .forecast-product {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .forecast-product i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+        
+        .forecast-product h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        
+        .forecast-current-price {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+        
+        .forecast-days {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .forecast-day {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        
+        .forecast-day:last-child {
+            border-bottom: none;
+        }
+        
+        .day-name {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+        
+        .day-price {
+            font-weight: 600;
+        }
+        
+        .forecast-reason {
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+        
+        .forecast-reason i {
+            color: var(--primary-color);
+            margin-right: 5px;
+        }
+        
+        /* Loading */
+        .loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: var(--gray-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER WITH USER MENU -->
+    <header>
+        <div class="logo">Agri<span>Smart</span></div>
+        
+        <nav>
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home"></i> Trang chủ</a></li>
+                <li><a href="weather.html"><i class="fas fa-cloud-sun"></i> Thời tiết</a></li>
+                <li><a href="prices.html" class="active"><i class="fas fa-chart-line"></i> Giá cả</a></li>
+                <li><a href="knowledge.html"><i class="fas fa-book"></i> Kiến thức</a></li>
+                <li><a href="community.html"><i class="fas fa-users"></i> Cộng đồng</a></li>
+            </ul>
+        </nav>
+        
+        <div class="header-right">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Tìm kiếm nông sản..." id="searchInput">
+            </div>
+            
+            <div class="notification" id="notificationBtn">
+                <i class="fas fa-bell"></i>
+                <!-- Đã xóa badge thông báo -->
+            </div>
+            
+            <div class="user-profile" id="userMenuContainer">
+                <!-- User menu sẽ được cập nhật bằng JavaScript -->
+            </div>
+        </div>
+    </header>
+
+    <!-- PAGE HEADER -->
+    <section class="page-header">
+        <h1>📊 Giá nông sản thị trường theo vùng miền</h1>
+        <p class="page-subtitle">Cập nhật giá thực tế theo từng vùng, dự báo biến động dựa trên thời tiết</p>
+        <div class="current-datetime" id="currentDateTime"></div>
+    </section>
+
+    <!-- REGION SELECTOR -->
+    <div class="region-selector-container">
+        <div class="region-selector-title">
+            <i class="fas fa-map-marker-alt" style="color: var(--primary-color);"></i>
+            Chọn vùng miền để xem giá nông sản chi tiết:
+        </div>
+        
+        <div class="region-buttons">
+            <button class="region-btn active" data-region="north" data-city="Hanoi">
+                <i class="fas fa-mountain"></i>
+                Miền Bắc
+            </button>
+            <button class="region-btn" data-region="central" data-city="Da Nang">
+                <i class="fas fa-umbrella-beach"></i>
+                Miền Trung
+            </button>
+            <button class="region-btn" data-region="south" data-city="Ho Chi Minh City">
+                <i class="fas fa-tree"></i>
+                Miền Nam
+            </button>
+            <button class="region-btn" data-region="highlands" data-city="Buon Ma Thuot">
+                <i class="fas fa-mountain-sun"></i>
+                Tây Nguyên
+            </button>
+            <button class="region-btn" data-region="mekong" data-city="Can Tho">
+                <i class="fas fa-water"></i>
+                Đồng bằng sông Cửu Long
+            </button>
+        </div>
+        
+        <div class="current-region-info" id="currentRegionInfo">
+            <i class="fas fa-map-pin"></i>
+            <span>Đang xem: Miền Bắc - Hà Nội</span>
+        </div>
+    </div>
+
+    <!-- WEATHER IMPACT CARD -->
+    <div class="weather-impact-card" id="weatherImpactCard">
+        <div class="weather-impact-icon" id="weatherImpactIcon">
+            <i class="fas fa-cloud-sun"></i>
+        </div>
+        <div class="weather-impact-content">
+            <div class="weather-impact-title" id="weatherImpactTitle">
+                🌤️ Thời tiết thuận lợi cho sản xuất
+            </div>
+            <div class="weather-impact-desc" id="weatherImpactDesc">
+                Thời tiết ôn hòa, nguồn cung ổn định. Giá cả dự báo ít biến động trong tuần tới.
+            </div>
+        </div>
+    </div>
+
+    <!-- MARKET OVERVIEW -->
+    <section class="market-overview">
+        <div class="overview-card">
+            <div class="overview-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="overview-content">
+                <h3>Chỉ số giá vùng</h3>
+                <div class="overview-value" id="regionPriceIndex">124.5</div>
+                <div class="overview-change price-up" id="regionPriceChange">
+                    <i class="fas fa-arrow-up"></i> +2.3%
+                </div>
+            </div>
+        </div>
+        
+        <div class="overview-card">
+            <div class="overview-icon">
+                <i class="fas fa-truck"></i>
+            </div>
+            <div class="overview-content">
+                <h3>Nguồn cung</h3>
+                <div class="overview-value" id="supplyStatus">Ổn định</div>
+                <div class="overview-desc" id="supplyDesc">+12% so với tuần trước</div>
+            </div>
+        </div>
+        
+        <div class="overview-card">
+            <div class="overview-icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="overview-content">
+                <h3>Nhu cầu</h3>
+                <div class="overview-value" id="demandStatus">Cao</div>
+                <div class="overview-desc" id="demandDesc">Xuất khẩu tăng 15%</div>
+            </div>
+        </div>
+        
+        <div class="overview-card">
+            <div class="overview-icon">
+                <i class="fas fa-calendar"></i>
+            </div>
+            <div class="overview-content">
+                <h3>Mùa vụ</h3>
+                <div class="overview-value" id="seasonStatus">Thu hoạch</div>
+                <div class="overview-desc" id="seasonDesc">Lúa Hè Thu, Trái cây</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICE CHART -->
+    <div class="price-chart-container">
+        <div class="chart-header">
+            <h2>
+                <i class="fas fa-chart-area"></i>
+                Biến động giá 7 ngày qua - <span id="chartRegion">Miền Bắc</span>
+            </h2>
+            <div class="chart-controls">
+                <select id="productSelector" class="product-selector">
+                    <option value="rice">Lúa IR50404</option>
+                    <option value="coffee">Cà phê Robusta</option>
+                    <option value="pepper">Tiêu đen</option>
+                    <option value="dragonfruit">Thanh long</option>
+                    <option value="mango">Xoài cát</option>
+                </select>
+            </div>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="priceChart"></canvas>
+        </div>
+        <div class="chart-note" id="chartNote">
+            <i class="fas fa-info-circle"></i>
+            <span>Biến động giá lúa 7 ngày qua tại Miền Bắc. Giá chịu ảnh hưởng bởi thời tiết và thị trường.</span>
+        </div>
+    </div>
+
+    <!-- CATEGORY FILTERS - ĐÃ DI CHUYỂN XUỐNG SAU BIỂU ĐỒ -->
+    <div class="category-filters">
+        <button class="category-btn active" data-category="all">
+            <i class="fas fa-th-large"></i> Tất cả
+        </button>
+        <button class="category-btn" data-category="cereal">
+            <i class="fas fa-seedling"></i> Lương thực
+        </button>
+        <button class="category-btn" data-category="fruit">
+            <i class="fas fa-apple-alt"></i> Trái cây
+        </button>
+        <button class="category-btn" data-category="industrial">
+            <i class="fas fa-leaf"></i> Cây công nghiệp
+        </button>
+        <button class="category-btn" data-category="vegetable">
+            <i class="fas fa-carrot"></i> Rau củ
+        </button>
+    </div>
+
+    <!-- PRICE TABLE -->
+    <section class="price-section">
+        <div class="section-header">
+            <h2>
+                <i class="fas fa-table"></i>
+                Bảng giá nông sản hôm nay - <span id="tableRegion">Miền Bắc</span>
+            </h2>
+            <div class="update-time" id="tableUpdateTime">
+                <i class="far fa-clock"></i>
+                <span>Đang cập nhật...</span>
+            </div>
+        </div>
+
+        <div class="price-table-container">
+            <table class="price-table" id="priceTable">
+                <thead>
+                    <tr>
+                        <th>Nông sản</th>
+                        <th>Loại</th>
+                        <th>Giá hôm nay</th>
+                        <th>Giá hôm qua</th>
+                        <th>Thay đổi</th>
+                        <th>Xu hướng</th>
+                        <th>Dự báo 7 ngày</th>
+                    </tr>
+                </thead>
+                <tbody id="priceTableBody">
+                    <!-- Dữ liệu sẽ được thêm bằng JavaScript -->
+                    <tr>
+                        <td colspan="7" class="loading">Đang tải dữ liệu giá...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- REGIONAL PRICE COMPARISON -->
+    <section class="regional-comparison">
+        <h2>
+            <i class="fas fa-map-marked-alt"></i>
+            So sánh giá giữa các vùng miền
+        </h2>
+        
+        <div class="comparison-grid" id="comparisonGrid">
+            <!-- Dữ liệu sẽ được thêm bằng JavaScript -->
+            <div class="loading">Đang tải dữ liệu so sánh...</div>
+        </div>
+    </section>
+
+    <!-- PRICE FORECAST 7 DAYS -->
+    <section class="price-forecast">
+        <div class="forecast-header">
+            <h2>
+                <i class="fas fa-chart-line"></i>
+                Dự báo giá 7 ngày tới - <span id="forecastRegion">Miền Bắc</span>
+            </h2>
+            <div class="forecast-note">
+                <span class="badge" style="background-color: #e9f5e9; padding: 5px 10px; border-radius: 20px;">
+                    <i class="fas fa-cloud-sun"></i> Dựa trên thời tiết
+                </span>
+            </div>
+        </div>
+        
+        <div class="forecast-grid" id="forecastGrid">
+            <!-- Dữ liệu sẽ được thêm bằng JavaScript -->
+            <div class="loading">Đang tính toán dự báo dựa trên thời tiết...</div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-grid">
+                <!-- Cột 1: Giới thiệu -->
+                <div class="footer-col">
+                    <div class="footer-logo">Agri<span>Smart</span></div>
+                    <p>Nền tảng nông nghiệp thông minh hàng đầu Việt Nam, kết nối nhà nông với công nghệ và thị trường.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-zalo"></i></a>
+                    </div>
+                </div>
+                
+                <!-- Cột 2: Liên kết nhanh -->
+                <div class="footer-col">
+                    <h3>Liên kết nhanh</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html"><i class="fas fa-chevron-right"></i> Trang chủ</a></li>
+                        <li><a href="weather.html"><i class="fas fa-chevron-right"></i> Thời tiết</a></li>
+                        <li><a href="prices.html"><i class="fas fa-chevron-right"></i> Giá nông sản</a></li>
+                        <li><a href="knowledge.html"><i class="fas fa-chevron-right"></i> Kiến thức</a></li>
+                        <li><a href="community.html"><i class="fas fa-chevron-right"></i> Cộng đồng</a></li>
+                        <li><a href="profile.html"><i class="fas fa-chevron-right"></i> Trang cá nhân</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Cột 3: Liên hệ -->
+                <div class="footer-col">
+                    <h3>Liên hệ</h3>
+                    <ul class="contact-info">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>123 Nguyễn Văn Linh, Quận 7, TP.HCM</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone-alt"></i>
+                            <span>1800-1234 (Miễn phí)</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>info@agrismart.vn</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Cột 4: Tải ứng dụng -->
+                <div class="footer-col">
+                    <h3>Tải ứng dụng</h3>
+                    <p>Ứng dụng AgriSmart có mặt trên:</p>
+                    <div class="app-buttons">
+                        <a href="#" class="app-btn">
+                            <i class="fab fa-google-play"></i>
+                            Google Play
+                        </a>
+                        <a href="#" class="app-btn">
+                            <i class="fab fa-apple"></i>
+                            App Store
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 AgriSmart - Nông Nghiệp Thông Minh. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ========== USER AUTHENTICATION & NOTIFICATION ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            updateUserMenu();
+            updateDateTime();
+            
+            // Initialize with default region (North)
+            loadRegionPrices('north', 'Hanoi');
+            
+            // Setup region buttons
+            document.querySelectorAll('.region-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const region = this.dataset.region;
+                    const city = this.dataset.city;
+                    
+                    // Update region info
+                    document.getElementById('currentRegionInfo').querySelector('span').textContent = `Đang xem: ${this.textContent.trim()}`;
+                    document.getElementById('chartRegion').textContent = this.textContent.trim();
+                    document.getElementById('tableRegion').textContent = this.textContent.trim();
+                    document.getElementById('forecastRegion').textContent = this.textContent.trim();
+                    
+                    // Load prices for selected region
+                    loadRegionPrices(region, city);
+                });
+            });
+            
+            // Setup category filters
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const category = this.dataset.category;
+                    filterPriceTable(category);
+                });
+            });
+            
+            // Setup product selector for chart
+            document.getElementById('productSelector').addEventListener('change', function() {
+                updateChartForProduct(this.value);
+            });
+            
+            // Notification click handler
+            document.getElementById('notificationBtn').addEventListener('click', function() {
+                showNotificationModal();
+            });
+            
+            // Auto-refresh every 30 minutes
+            setInterval(() => {
+                const activeBtn = document.querySelector('.region-btn.active');
+                if (activeBtn) {
+                    loadRegionPrices(activeBtn.dataset.region, activeBtn.dataset.city);
+                }
+            }, 1800000); // 30 minutes
+        });
+
+        function updateUserMenu() {
+            const userContainer = document.getElementById('userMenuContainer');
+            const savedUser = localStorage.getItem('agri_user') || sessionStorage.getItem('agri_user');
+            
+            if (savedUser) {
+                const userData = JSON.parse(savedUser);
+                userContainer.innerHTML = `
+                    <div class="user-profile" onclick="toggleUserDropdown(event)">
+                        <img src="${userData.avatar || 'https://i.pravatar.cc/40?u=' + userData.email}" alt="${userData.name}" class="user-avatar">
+                        <div class="user-dropdown">
+                            <div class="dropdown-header">
+                                <img src="${userData.avatar || 'https://i.pravatar.cc/50?u=' + userData.email}" alt="${userData.name}">
+                                <div class="user-info">
+                                    <h4>${userData.name}</h4>
+                                    <p>${userData.email}</p>
+                                </div>
+                            </div>
+                            <ul class="dropdown-menu">
+                                <li><a href="profile.html"><i class="fas fa-user"></i> Trang cá nhân</a></li>
+                            </ul>
+                            <div class="dropdown-footer">
+                                <a href="#" onclick="logout(); return false;" class="logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                userContainer.innerHTML = `<a href="login.html" class="login-btn"><i class="fas fa-sign-in-alt"></i> Đăng nhập</a>`;
+            }
+        }
+
+        function toggleUserDropdown(event) {
+            event.stopPropagation();
+            event.currentTarget.classList.toggle('active');
+        }
+
+        document.addEventListener('click', function() {
+            const userProfile = document.querySelector('.user-profile');
+            if (userProfile) userProfile.classList.remove('active');
+        });
+
+        function logout() {
+            localStorage.removeItem('agri_user');
+            sessionStorage.removeItem('agri_user');
+            window.location.reload();
+        }
+
+        // ========== NOTIFICATION MODAL - TÍNH NĂNG ĐANG PHÁT TRIỂN ==========
+        function showNotificationModal() {
+            const modal = document.createElement('div');
+            modal.className = 'notification-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Thông báo</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="developing-content">
+                        <div class="developing-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="developing-title">Tính năng đang phát triển</div>
+                        <div class="developing-text">
+                            Chức năng thông báo sẽ được cập nhật trong thời gian tới. 
+                            Hiện tại bạn có thể theo dõi thông tin qua các trang khác.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-ok" onclick="closeNotificationModal(this)">Đã hiểu</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            const closeBtn = modal.querySelector('.close-modal');
+            closeBtn.addEventListener('click', function() {
+                document.body.removeChild(modal);
+            });
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+        
+        function closeNotificationModal(btn) {
+            const modal = btn.closest('.notification-modal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+        }
+
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'numeric', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('vi-VN', options);
+        }
+
+        // ========== PRICE DATA BY REGION ==========
+        const API_KEY = 'bd5e378503939ddaee76f12ad7a97608'; // Demo API key
+        
+        // Region database
+        const regions = {
+            north: {
+                name: 'Miền Bắc',
+                city: 'Hanoi',
+                lat: 21.0285,
+                lon: 105.8542
+            },
+            central: {
+                name: 'Miền Trung',
+                city: 'Da Nang',
+                lat: 16.0544,
+                lon: 108.2022
+            },
+            south: {
+                name: 'Miền Nam',
+                city: 'Ho Chi Minh City',
+                lat: 10.8231,
+                lon: 106.6297
+            },
+            highlands: {
+                name: 'Tây Nguyên',
+                city: 'Buon Ma Thuot',
+                lat: 12.6675,
+                lon: 108.0378
+            },
+            mekong: {
+                name: 'Đồng bằng sông Cửu Long',
+                city: 'Can Tho',
+                lat: 10.0452,
+                lon: 105.7469
+            }
+        };
+
+        // Price database by region (will be adjusted by weather)
+        const priceDatabase = {
+            north: {
+                cereal: [
+                    { name: 'Lúa IR50404', type: 'Lúa thường', basePrice: 11500, icon: 'fa-seedling' },
+                    { name: 'Lúa Jasmine', type: 'Lúa thơm', basePrice: 13500, icon: 'fa-seedling' },
+                    { name: 'Ngô', type: 'Ngô hạt', basePrice: 7500, icon: 'fa-seedling' }
+                ],
+                fruit: [
+                    { name: 'Nhãn lồng', type: 'Nhãn', basePrice: 25000, icon: 'fa-apple-alt' },
+                    { name: 'Vải thiều', type: 'Vải', basePrice: 18000, icon: 'fa-apple-alt' },
+                    { name: 'Cam sành', type: 'Cam', basePrice: 22000, icon: 'fa-apple-alt' }
+                ],
+                industrial: [
+                    { name: 'Chè', type: 'Chè búp', basePrice: 35000, icon: 'fa-leaf' },
+                    { name: 'Thuốc lá', type: 'Lá thuốc', basePrice: 45000, icon: 'fa-leaf' }
+                ],
+                vegetable: [
+                    { name: 'Su hào', type: 'Củ', basePrice: 8000, icon: 'fa-carrot' },
+                    { name: 'Cải thảo', type: 'Rau', basePrice: 7000, icon: 'fa-carrot' },
+                    { name: 'Cà chua', type: 'Quả', basePrice: 12000, icon: 'fa-carrot' }
+                ]
+            },
+            central: {
+                cereal: [
+                    { name: 'Lúa IR50404', type: 'Lúa thường', basePrice: 11800, icon: 'fa-seedling' },
+                    { name: 'Lúa HT1', type: 'Lúa chất lượng', basePrice: 14200, icon: 'fa-seedling' }
+                ],
+                fruit: [
+                    { name: 'Thanh long', type: 'Ruột trắng', basePrice: 15000, icon: 'fa-apple-alt' },
+                    { name: 'Xoài cát', type: 'Xoài', basePrice: 28000, icon: 'fa-apple-alt' },
+                    { name: 'Dừa', type: 'Dừa xiêm', basePrice: 12000, icon: 'fa-apple-alt' }
+                ],
+                industrial: [
+                    { name: 'Mía', type: 'Cây mía', basePrice: 1200, icon: 'fa-leaf' },
+                    { name: 'Tiêu đen', type: 'Tiêu', basePrice: 82000, icon: 'fa-leaf' }
+                ],
+                vegetable: [
+                    { name: 'Hành tím', type: 'Củ', basePrice: 18000, icon: 'fa-carrot' },
+                    { name: 'Tỏi', type: 'Củ', basePrice: 35000, icon: 'fa-carrot' }
+                ]
+            },
+            south: {
+                cereal: [
+                    { name: 'Lúa IR50404', type: 'Lúa thường', basePrice: 12200, icon: 'fa-seedling' }
+                ],
+                fruit: [
+                    { name: 'Sầu riêng Ri6', type: 'Sầu riêng', basePrice: 65000, icon: 'fa-apple-alt' },
+                    { name: 'Chôm chôm', type: 'Chôm chôm', basePrice: 22000, icon: 'fa-apple-alt' },
+                    { name: 'Măng cụt', type: 'Măng cụt', basePrice: 45000, icon: 'fa-apple-alt' }
+                ],
+                industrial: [
+                    { name: 'Cao su', type: 'Mủ cao su', basePrice: 32000, icon: 'fa-leaf' },
+                    { name: 'Điều', type: 'Hạt điều', basePrice: 55000, icon: 'fa-leaf' }
+                ],
+                vegetable: [
+                    { name: 'Rau muống', type: 'Rau', basePrice: 6000, icon: 'fa-carrot' },
+                    { name: 'Mồng tơi', type: 'Rau', basePrice: 5500, icon: 'fa-carrot' }
+                ]
+            },
+            highlands: {
+                cereal: [
+                    { name: 'Lúa', type: 'Lúa nương', basePrice: 12500, icon: 'fa-seedling' }
+                ],
+                fruit: [
+                    { name: 'Bơ', type: 'Bơ sáp', basePrice: 35000, icon: 'fa-apple-alt' },
+                    { name: 'Sầu riêng', type: 'Sầu riêng', basePrice: 70000, icon: 'fa-apple-alt' }
+                ],
+                industrial: [
+                    { name: 'Cà phê Robusta', type: 'Cà phê', basePrice: 58000, icon: 'fa-leaf' },
+                    { name: 'Cà phê Arabica', type: 'Cà phê', basePrice: 95000, icon: 'fa-leaf' },
+                    { name: 'Tiêu đen', type: 'Tiêu', basePrice: 85500, icon: 'fa-leaf' },
+                    { name: 'Điều', type: 'Hạt điều', basePrice: 52000, icon: 'fa-leaf' }
+                ],
+                vegetable: [
+                    { name: 'Khoai lang', type: 'Củ', basePrice: 10000, icon: 'fa-carrot' },
+                    { name: 'Cà rốt', type: 'Củ', basePrice: 12000, icon: 'fa-carrot' }
+                ]
+            },
+            mekong: {
+                cereal: [
+                    { name: 'Lúa IR50404', type: 'Lúa thường', basePrice: 12500, icon: 'fa-seedling' },
+                    { name: 'Lúa Jasmine', type: 'Lúa thơm', basePrice: 14200, icon: 'fa-seedling' },
+                    { name: 'Lúa ST24', type: 'Lúa đặc sản', basePrice: 15500, icon: 'fa-seedling' }
+                ],
+                fruit: [
+                    { name: 'Xoài cát Hòa Lộc', type: 'Xoài', basePrice: 32000, icon: 'fa-apple-alt' },
+                    { name: 'Thanh long ruột đỏ', type: 'Thanh long', basePrice: 18000, icon: 'fa-apple-alt' },
+                    { name: 'Bưởi da xanh', type: 'Bưởi', basePrice: 35000, icon: 'fa-apple-alt' },
+                    { name: 'Sầu riêng Ri6', type: 'Sầu riêng', basePrice: 65000, icon: 'fa-apple-alt' }
+                ],
+                industrial: [
+                    { name: 'Dừa', type: 'Dừa khô', basePrice: 9000, icon: 'fa-leaf' },
+                    { name: 'Cacao', type: 'Hạt cacao', basePrice: 45000, icon: 'fa-leaf' }
+                ],
+                vegetable: [
+                    { name: 'Rau muống', type: 'Rau', basePrice: 5000, icon: 'fa-carrot' },
+                    { name: 'Cải ngọt', type: 'Rau', basePrice: 6000, icon: 'fa-carrot' }
+                ]
+            }
+        };
+
+        // Category icons and names
+        const categoryNames = {
+            cereal: { name: '🌾 Lương thực', icon: 'fa-seedling' },
+            fruit: { name: '🍎 Trái cây', icon: 'fa-apple-alt' },
+            industrial: { name: '🌿 Cây công nghiệp', icon: 'fa-leaf' },
+            vegetable: { name: '🥕 Rau củ', icon: 'fa-carrot' }
+        };
+
+        let currentRegion = 'north';
+        let currentCategory = 'all';
+        let priceChart;
+
+        async function loadRegionPrices(regionKey, city) {
+            currentRegion = regionKey;
+            
+            try {
+                // Show loading state
+                document.getElementById('priceTableBody').innerHTML = '<tr><td colspan="7" class="loading">Đang tải dữ liệu giá...</td></tr>';
+                document.getElementById('comparisonGrid').innerHTML = '<div class="loading">Đang tải dữ liệu so sánh...</div>';
+                document.getElementById('forecastGrid').innerHTML = '<div class="loading">Đang tính toán dự báo...</div>';
+                
+                // Fetch weather data for the region
+                const weatherResponse = await fetch(
+                    `https://api.openweathermap.org/data/2.5/weather?q=${city},VN&units=metric&appid=${API_KEY}&lang=vi`
+                );
+                const weatherData = await weatherResponse.json();
+                
+                // Update weather impact card
+                updateWeatherImpact(weatherData, regionKey);
+                
+                // Get prices for region
+                const prices = priceDatabase[regionKey];
+                
+                // Adjust prices based on weather
+                const adjustedPrices = adjustPricesByWeather(prices, weatherData, regionKey);
+                
+                // Display price table
+                displayPriceTable(adjustedPrices, regionKey);
+                
+                // Update market overview
+                updateMarketOverview(weatherData, regionKey);
+                
+                // Update regional comparison
+                updateRegionalComparison(regionKey, weatherData);
+                
+                // Update price forecast based on weather
+                updatePriceForecast(regionKey, weatherData);
+                
+                // Initialize/update chart
+                initPriceChart(regionKey);
+                
+                // Update table update time
+                const now = new Date();
+                document.getElementById('tableUpdateTime').innerHTML = `
+                    <i class="far fa-clock"></i>
+                    <span>Cập nhật: ${now.toLocaleTimeString('vi-VN')} ${now.toLocaleDateString('vi-VN')}</span>
+                `;
+                
+            } catch (error) {
+                console.error('Error loading prices:', error);
+                // Fallback to sample data
+                loadSampleRegionPrices(regionKey);
+            }
+        }
+
+        function adjustPricesByWeather(prices, weatherData, regionKey) {
+            if (!weatherData.main) return prices;
+            
+            const temp = weatherData.main.temp;
+            const humidity = weatherData.main.humidity;
+            const weatherId = weatherData.weather[0].id;
+            
+            const adjustedPrices = JSON.parse(JSON.stringify(prices)); // Deep copy
+            
+            // Adjust prices based on weather conditions
+            for (let category in adjustedPrices) {
+                adjustedPrices[category].forEach(product => {
+                    // Temperature impact
+                    if (temp > 32) {
+                        // Heat reduces yield for some crops
+                        if (product.name.includes('Lúa') || product.name.includes('Rau')) {
+                            product.basePrice = Math.round(product.basePrice * 1.05); // +5%
+                        }
+                    } else if (temp < 20) {
+                        // Cold affects tropical fruits
+                        if (product.name.includes('Sầu riêng') || product.name.includes('Xoài')) {
+                            product.basePrice = Math.round(product.basePrice * 1.08); // +8%
+                        }
+                    }
+                    
+                    // Rain impact
+                    if (weatherId >= 500 && weatherId < 600) {
+                        // Rain makes harvesting difficult
+                        if (product.name.includes('Cà phê') || product.name.includes('Tiêu')) {
+                            product.basePrice = Math.round(product.basePrice * 1.03); // +3%
+                        }
+                    }
+                    
+                    // Humidity impact
+                    if (humidity > 85) {
+                        // High humidity increases disease risk
+                        if (product.name.includes('Lúa') || product.name.includes('Rau')) {
+                            product.basePrice = Math.round(product.basePrice * 1.02); // +2%
+                        }
+                    }
+                });
+            }
+            
+            return adjustedPrices;
+        }
+
+        function updateWeatherImpact(weatherData, regionKey) {
+            if (!weatherData.main) {
+                // Giữ nguyên dữ liệu mặc định nếu không có weatherData
+                return;
+            }
+            
+            const temp = weatherData.main.temp;
+            const weatherDesc = weatherData.weather[0].description;
+            const weatherId = weatherData.weather[0].id;
+            
+            let impactTitle = '';
+            let impactDesc = '';
+            let icon = 'fa-cloud-sun';
+            
+            if (temp > 32) {
+                impactTitle = '🔥 Nắng nóng ảnh hưởng đến năng suất cây trồng';
+                impactDesc = `Nhiệt độ cao (${Math.round(temp)}°C) làm giảm năng suất lúa, rau màu. Giá dự báo tăng 3-5% trong tuần tới.`;
+                icon = 'fa-temperature-high';
+            } else if (weatherId >= 500 && weatherId < 600) {
+                impactTitle = '☔ Mưa nhiều gây khó khăn thu hoạch';
+                impactDesc = `Mưa kéo dài làm gián đoạn thu hoạch cà phê, tiêu. Nguồn cung giảm, giá có xu hướng tăng.`;
+                icon = 'fa-cloud-rain';
+            } else if (temp < 20) {
+                impactTitle = '❄️ Không khí lạnh ảnh hưởng cây trồng nhiệt đới';
+                impactDesc = `Nhiệt độ thấp ảnh hưởng đến sầu riêng, xoài. Giá dự báo tăng do khan hiếm.`;
+                icon = 'fa-temperature-low';
+            } else {
+                impactTitle = '🌤️ Thời tiết thuận lợi cho sản xuất';
+                impactDesc = `Thời tiết ôn hòa, nguồn cung ổn định. Giá cả dự báo ít biến động trong tuần tới.`;
+                icon = 'fa-cloud-sun';
+            }
+            
+            document.getElementById('weatherImpactIcon').innerHTML = `<i class="fas ${icon}"></i>`;
+            document.getElementById('weatherImpactTitle').textContent = impactTitle;
+            document.getElementById('weatherImpactDesc').textContent = impactDesc;
+        }
+
+        function updateMarketOverview(weatherData, regionKey) {
+            if (!weatherData.main) return;
+            
+            const temp = weatherData.main.temp;
+            const region = regions[regionKey];
+            
+            // Calculate price index (simulated)
+            let priceIndex = 100;
+            let priceChange = 0;
+            
+            if (temp > 32) {
+                priceIndex = 105;
+                priceChange = 5;
+            } else if (temp < 20) {
+                priceIndex = 103;
+                priceChange = 3;
+            } else if (weatherData.weather[0].id >= 500 && weatherData.weather[0].id < 600) {
+                priceIndex = 102;
+                priceChange = 2;
+            } else {
+                priceIndex = 100;
+                priceChange = 0;
+            }
+            
+            // Add random variation
+            priceIndex += Math.round(Math.random() * 2);
+            priceChange += (Math.random() * 2).toFixed(1);
+            
+            document.getElementById('regionPriceIndex').textContent = priceIndex.toFixed(1);
+            document.getElementById('regionPriceChange').innerHTML = `
+                <i class="fas fa-arrow-${priceChange >= 0 ? 'up' : 'down'}"></i> 
+                ${priceChange >= 0 ? '+' : ''}${priceChange}%
+            `;
+            
+            // Supply status
+            const supplyStatus = temp > 32 ? 'Giảm nhẹ' : (temp < 20 ? 'Khan hiếm' : 'Ổn định');
+            document.getElementById('supplyStatus').textContent = supplyStatus;
+            document.getElementById('supplyDesc').textContent = temp > 32 ? '-5% so với tuần trước' : (temp < 20 ? '-12% so với tuần trước' : '+8% so với tuần trước');
+            
+            // Demand status
+            document.getElementById('demandStatus').textContent = 'Cao';
+            document.getElementById('demandDesc').textContent = 'Xuất khẩu tăng 15%';
+            
+            // Season status
+            const seasons = {
+                north: 'Thu hoạch lúa mùa',
+                central: 'Thu hoạch lúa hè thu',
+                south: 'Vụ trái cây',
+                highlands: 'Thu hoạch cà phê',
+                mekong: 'Thu hoạch lúa, trái cây'
+            };
+            document.getElementById('seasonStatus').textContent = 'Thu hoạch';
+            document.getElementById('seasonDesc').textContent = seasons[regionKey] || 'Vụ chính';
+        }
+
+        function displayPriceTable(prices, regionKey) {
+            const tbody = document.getElementById('priceTableBody');
+            tbody.innerHTML = '';
+            
+            // Yesterday's prices (simulated)
+            const yesterdayFactor = 0.95 + Math.random() * 0.1;
+            
+            for (let category in prices) {
+                // Add category header row
+                const categoryRow = document.createElement('tr');
+                categoryRow.className = 'category-header';
+                categoryRow.innerHTML = `
+                    <td colspan="7">
+                        <i class="fas ${categoryNames[category].icon}"></i> 
+                        ${categoryNames[category].name}
+                    </td>
+                `;
+                tbody.appendChild(categoryRow);
+                
+                // Add products
+                prices[category].forEach(product => {
+                    const todayPrice = product.basePrice;
+                    const yesterdayPrice = Math.round(todayPrice * (0.95 + Math.random() * 0.1));
+                    const change = ((todayPrice - yesterdayPrice) / yesterdayPrice * 100).toFixed(1);
+                    const changeClass = change > 0 ? 'price-up' : (change < 0 ? 'price-down' : 'trend-stable');
+                    const trendIcon = change > 0 ? 'fa-arrow-up' : (change < 0 ? 'fa-arrow-down' : 'fa-minus');
+                    
+                    // Generate forecast based on weather
+                    const forecast = generateProductForecast(product, regionKey);
+                    
+                    const row = document.createElement('tr');
+                    row.dataset.category = category;
+                    row.innerHTML = `
+                        <td><i class="fas ${product.icon}" style="margin-right: 8px; color: var(--primary-color);"></i> ${product.name}</td>
+                        <td>${product.type}</td>
+                        <td><strong>${todayPrice.toLocaleString('vi-VN')} VNĐ</strong></td>
+                        <td>${yesterdayPrice.toLocaleString('vi-VN')} VNĐ</td>
+                        <td class="${changeClass}">${change > 0 ? '+' : ''}${change}%</td>
+                        <td><span class="${changeClass}"><i class="fas ${trendIcon}"></i> ${change > 0 ? 'Tăng' : (change < 0 ? 'Giảm' : 'Ổn định')}</span></td>
+                        <td>${forecast}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+        function generateProductForecast(product, regionKey) {
+            const forecasts = [
+                '📈 Tăng 2-3%',
+                '📈 Tăng 4-5%',
+                '📉 Giảm 1-2%',
+                '📉 Giảm 3-4%',
+                '➡️ Ổn định',
+                '📈 Tăng nhẹ',
+                '📉 Giảm nhẹ'
+            ];
+            
+            // Adjust based on region and product
+            if (regionKey === 'highlands' && product.name.includes('Cà phê')) {
+                return '📈 Tăng 5-7% (mùa mưa)';
+            } else if (regionKey === 'mekong' && product.name.includes('Lúa')) {
+                return '📈 Tăng 2-4% (nắng nóng)';
+            } else if (regionKey === 'north' && product.name.includes('Vải')) {
+                return '📉 Giảm 3-5% (cuối vụ)';
+            }
+            
+            return forecasts[Math.floor(Math.random() * forecasts.length)];
+        }
+
+        function filterPriceTable(category) {
+            const rows = document.querySelectorAll('#priceTableBody tr');
+            
+            rows.forEach(row => {
+                if (row.classList.contains('category-header')) {
+                    // Show category header if any product in category is visible
+                    const nextRows = [];
+                    let nextRow = row.nextElementSibling;
+                    while (nextRow && !nextRow.classList.contains('category-header')) {
+                        nextRows.push(nextRow);
+                        nextRow = nextRow.nextElementSibling;
+                    }
+                    
+                    const hasVisibleProduct = nextRows.some(r => {
+                        if (category === 'all') return true;
+                        return r.dataset.category === category;
+                    });
+                    
+                    row.style.display = hasVisibleProduct ? '' : 'none';
+                } else {
+                    if (category === 'all') {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = row.dataset.category === category ? '' : 'none';
+                    }
+                }
+            });
+        }
+
+        function initPriceChart(regionKey) {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            
+            // Generate last 7 days
+            const labels = [];
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                labels.push(`${date.getDate()}/${date.getMonth() + 1}`);
+            }
+            
+            // Generate price data based on region and weather
+            let basePrice = 12000;
+            if (regionKey === 'highlands') basePrice = 58000;
+            if (regionKey === 'mekong') basePrice = 12500;
+            
+            const prices = [];
+            for (let i = 0; i < 7; i++) {
+                const variation = (Math.random() * 1000) - 500;
+                prices.push(Math.round(basePrice + variation));
+            }
+            
+            if (priceChart) {
+                priceChart.destroy();
+            }
+            
+            priceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Giá (VNĐ)',
+                        data: prices,
+                        borderColor: '#2B8A3E',
+                        backgroundColor: 'rgba(43, 138, 62, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.parsed.y.toLocaleString('vi-VN')} VNĐ`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('vi-VN') + ' VNĐ';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Update chart note
+            const products = {
+                rice: 'lúa',
+                coffee: 'cà phê',
+                pepper: 'tiêu',
+                dragonfruit: 'thanh long',
+                mango: 'xoài'
+            };
+            const productName = products[document.getElementById('productSelector').value] || 'nông sản';
+            document.getElementById('chartNote').innerHTML = `
+                <i class="fas fa-info-circle"></i>
+                <span>Biến động giá ${productName} 7 ngày qua tại ${regions[regionKey].name}. Giá chịu ảnh hưởng bởi thời tiết và thị trường.</span>
+            `;
+        }
+
+        function updateChartForProduct(product) {
+            if (!priceChart) return;
+            
+            // Simulate price data for different products
+            let basePrice = 12000;
+            switch(product) {
+                case 'rice': basePrice = 12500; break;
+                case 'coffee': basePrice = 58000; break;
+                case 'pepper': basePrice = 85500; break;
+                case 'dragonfruit': basePrice = 18000; break;
+                case 'mango': basePrice = 32000; break;
+            }
+            
+            const newPrices = [];
+            for (let i = 0; i < 7; i++) {
+                const variation = (Math.random() * basePrice * 0.1) - (basePrice * 0.05);
+                newPrices.push(Math.round(basePrice + variation));
+            }
+            
+            priceChart.data.datasets[0].data = newPrices;
+            priceChart.update();
+            
+            // Update note
+            const productNames = {
+                rice: 'lúa',
+                coffee: 'cà phê',
+                pepper: 'tiêu',
+                dragonfruit: 'thanh long',
+                mango: 'xoài'
+            };
+            document.getElementById('chartNote').innerHTML = `
+                <i class="fas fa-info-circle"></i>
+                <span>Biến động giá ${productNames[product]} 7 ngày qua tại ${regions[currentRegion].name}.</span>
+            `;
+        }
+
+        async function updateRegionalComparison(activeRegion, weatherData) {
+            const regionList = ['north', 'central', 'south', 'highlands', 'mekong'];
+            const regionNames = {
+                north: 'Miền Bắc',
+                central: 'Miền Trung',
+                south: 'Miền Nam',
+                highlands: 'Tây Nguyên',
+                mekong: 'ĐBSCL'
+            };
+            
+            const comparisonGrid = document.getElementById('comparisonGrid');
+            comparisonGrid.innerHTML = '';
+            
+            for (const regionKey of regionList) {
+                try {
+                    const region = regions[regionKey];
+                    
+                    // Fetch weather for this region
+                    const response = await fetch(
+                        `https://api.openweathermap.org/data/2.5/weather?q=${region.city},VN&units=metric&appid=${API_KEY}&lang=vi`
+                    );
+                    const data = await response.json();
+                    
+                    // Get representative product prices
+                    const prices = priceDatabase[regionKey];
+                    let products = [];
+                    
+                    if (regionKey === 'highlands') {
+                        products = prices.industrial.slice(0, 2);
+                    } else if (regionKey === 'mekong') {
+                        products = prices.cereal.slice(0, 2);
+                    } else {
+                        products = prices.fruit.slice(0, 2);
+                    }
+                    
+                    const card = document.createElement('div');
+                    card.className = `region-card ${regionKey === activeRegion ? 'highlight' : ''}`;
+                    
+                    let productList = '';
+                    products.forEach(p => {
+                        const price = p.basePrice;
+                        productList += `
+                            <li class="region-price-item">
+                                <span class="product-name">
+                                    <i class="fas ${p.icon} product-icon"></i>
+                                    ${p.name}
+                                </span>
+                                <span><strong>${price.toLocaleString('vi-VN')} VNĐ</strong></span>
+                            </li>
+                        `;
+                    });
+                    
+                    const weatherIcon = data.weather ? data.weather[0].icon : '02d';
+                    const weatherDesc = data.weather ? data.weather[0].description : 'Mây thưa';
+                    const temp = data.main ? Math.round(data.main.temp) : 28;
+                    
+                    card.innerHTML = `
+                        <div class="region-header">
+                            <span class="region-name">
+                                <i class="fas fa-map-marker-alt" style="color: var(--primary-color);"></i>
+                                ${regionNames[regionKey]}
+                            </span>
+                            <span class="region-weather">
+                                <i class="fas fa-cloud-sun"></i> ${temp}°C, ${weatherDesc}
+                            </span>
+                        </div>
+                        <ul class="region-price-list">
+                            ${productList}
+                        </ul>
+                    `;
+                    
+                    comparisonGrid.appendChild(card);
+                    
+                } catch (error) {
+                    // Sample data if API fails
+                    const card = document.createElement('div');
+                    card.className = `region-card ${regionKey === activeRegion ? 'highlight' : ''}`;
+                    
+                    const sampleTemps = { north: 28, central: 32, south: 30, highlands: 24, mekong: 29 };
+                    const sampleWeather = { 
+                        north: 'Mây thưa', central: 'Nắng nóng', south: 'Mây thưa', 
+                        highlands: 'Mưa rào', mekong: 'Nắng nhẹ' 
+                    };
+                    
+                    const prices = priceDatabase[regionKey];
+                    let products = [];
+                    
+                    if (regionKey === 'highlands') {
+                        products = prices.industrial.slice(0, 2);
+                    } else if (regionKey === 'mekong') {
+                        products = prices.cereal.slice(0, 2);
+                    } else {
+                        products = prices.fruit.slice(0, 2);
+                    }
+                    
+                    let productList = '';
+                    products.forEach(p => {
+                        productList += `
+                            <li class="region-price-item">
+                                <span class="product-name">
+                                    <i class="fas ${p.icon} product-icon"></i>
+                                    ${p.name}
+                                </span>
+                                <span><strong>${p.basePrice.toLocaleString('vi-VN')} VNĐ</strong></span>
+                            </li>
+                        `;
+                    });
+                    
+                    card.innerHTML = `
+                        <div class="region-header">
+                            <span class="region-name">
+                                <i class="fas fa-map-marker-alt" style="color: var(--primary-color);"></i>
+                                ${regionNames[regionKey]}
+                            </span>
+                            <span class="region-weather">
+                                <i class="fas fa-cloud-sun"></i> ${sampleTemps[regionKey]}°C, ${sampleWeather[regionKey]}
+                            </span>
+                        </div>
+                        <ul class="region-price-list">
+                            ${productList}
+                        </ul>
+                    `;
+                    
+                    comparisonGrid.appendChild(card);
+                }
+            }
+        }
+
+        function updatePriceForecast(regionKey, weatherData) {
+            const forecastGrid = document.getElementById('forecastGrid');
+            forecastGrid.innerHTML = '';
+            
+            const temp = weatherData.main ? weatherData.main.temp : 28;
+            const weatherId = weatherData.weather ? weatherData.weather[0].id : 800;
+            
+            // Select representative products for forecast
+            const prices = priceDatabase[regionKey];
+            let forecastProducts = [];
+            
+            if (regionKey === 'highlands') {
+                forecastProducts = prices.industrial.slice(0, 3);
+            } else if (regionKey === 'mekong') {
+                forecastProducts = prices.cereal.slice(0, 2).concat(prices.fruit.slice(0, 1));
+            } else if (regionKey === 'north') {
+                forecastProducts = prices.fruit.slice(0, 2).concat(prices.cereal.slice(0, 1));
+            } else {
+                forecastProducts = prices.fruit.slice(0, 2).concat(prices.industrial.slice(0, 1));
+            }
+            
+            // Generate 7-day forecast for each product
+            forecastProducts.forEach(product => {
+                const basePrice = product.basePrice;
+                const forecast = generateWeatherBasedForecast(basePrice, temp, weatherId, product);
+                
+                const card = document.createElement('div');
+                card.className = 'forecast-card';
+                
+                let forecastDaysHtml = '';
+                const days = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+                
+                forecast.days.forEach((dayPrice, index) => {
+                    const change = ((dayPrice - basePrice) / basePrice * 100).toFixed(1);
+                    const changeClass = change > 0 ? 'price-up' : (change < 0 ? 'price-down' : '');
+                    
+                    forecastDaysHtml += `
+                        <div class="forecast-day">
+                            <span class="day-name">${days[index]}</span>
+                            <span class="day-price ${changeClass}">${dayPrice.toLocaleString('vi-VN')} VNĐ</span>
+                        </div>
+                    `;
+                });
+                
+                card.innerHTML = `
+                    <div class="forecast-product">
+                        <i class="fas ${product.icon}"></i>
+                        <h3>${product.name}</h3>
+                    </div>
+                    <div class="forecast-current-price">
+                        ${basePrice.toLocaleString('vi-VN')} VNĐ
+                    </div>
+                    <div class="forecast-days">
+                        ${forecastDaysHtml}
+                    </div>
+                    <div class="forecast-reason">
+                        <i class="fas fa-cloud-sun"></i>
+                        ${forecast.reason}
+                    </div>
+                `;
+                
+                forecastGrid.appendChild(card);
+            });
+        }
+
+        function generateWeatherBasedForecast(basePrice, temp, weatherId, product) {
+            const days = [];
+            let trend = 0;
+            let reason = '';
+            
+            // Determine trend based on weather
+            if (temp > 32) {
+                // Hot weather increases prices for most crops
+                trend = 0.01;
+                reason = 'Nắng nóng làm giảm năng suất, giá có xu hướng tăng.';
+            } else if (temp < 20) {
+                // Cold affects tropical fruits
+                if (product.name.includes('Sầu riêng') || product.name.includes('Xoài')) {
+                    trend = 0.015;
+                    reason = 'Lạnh ảnh hưởng đến cây ăn trái nhiệt đới, nguồn cung giảm.';
+                } else {
+                    trend = 0.005;
+                    reason = 'Nhiệt độ thấp thuận lợi cho rau màu, nguồn cung ổn định.';
+                }
+            } else if (weatherId >= 500 && weatherId < 600) {
+                // Rain affects harvesting
+                trend = 0.008;
+                reason = 'Mưa gây khó khăn thu hoạch, giá tăng nhẹ do gián đoạn nguồn cung.';
+            } else {
+                trend = -0.002;
+                reason = 'Thời tiết thuận lợi, nguồn cung dồi dào, giá ổn định.';
+            }
+            
+            // Add random variation
+            for (let i = 1; i <= 7; i++) {
+                const randomFactor = (Math.random() * 0.02) - 0.01; // -1% to +1%
+                const dayTrend = trend * i + randomFactor;
+                let dayPrice = Math.round(basePrice * (1 + dayTrend));
+                
+                // Ensure price doesn't go too low
+                if (dayPrice < basePrice * 0.85) dayPrice = Math.round(basePrice * 0.9);
+                if (dayPrice > basePrice * 1.2) dayPrice = Math.round(basePrice * 1.15);
+                
+                days.push(dayPrice);
+            }
+            
+            return { days, reason };
+        }
+
+        function loadSampleRegionPrices(regionKey) {
+            const prices = priceDatabase[regionKey];
+            
+            // Sample weather data
+            const sampleWeather = {
+                main: { temp: regionKey === 'highlands' ? 24 : 30 },
+                weather: [{ id: regionKey === 'highlands' ? 500 : 800 }]
+            };
+            
+            displayPriceTable(prices, regionKey);
+            updateMarketOverview(sampleWeather, regionKey);
+            updateRegionalComparison(regionKey, sampleWeather);
+            updatePriceForecast(regionKey, sampleWeather);
+            initPriceChart(regionKey);
+            
+            // Cập nhật weather impact với dữ liệu mẫu
+            updateWeatherImpact(sampleWeather, regionKey);
+            
+            // Update table time
+            const now = new Date();
+            document.getElementById('tableUpdateTime').innerHTML = `
+                <i class="far fa-clock"></i>
+                <span>Cập nhật: ${now.toLocaleTimeString('vi-VN')} (dữ liệu mẫu)</span>
+            `;
+        }
+    </script>
+</body>
+</html>

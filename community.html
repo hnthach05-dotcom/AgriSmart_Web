@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cộng đồng nông dân - AgriSmart</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .community-hero {
+            background: linear-gradient(135deg, #2B8A3E 0%, #087F5B 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            padding: 50px;
+            margin-bottom: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        @media (max-width:992px){.community-hero{grid-template-columns:1fr;}}
+        .community-hero .hero-content h1 { color: white; }
+        .hero-actions {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .community-hero .btn-primary {
+            background-color: white;
+            color: var(--primary-color);
+        }
+        .community-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .stat-value { display:block; font-size:1.8rem; font-weight:700; }
+        .weather-chat {
+            background-color: rgba(255,255,255,0.1);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+        .forum-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        @media (max-width:992px){.forum-layout{grid-template-columns:1fr;}}
+        .forum-sidebar {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+        .user-welcome {
+            text-align: center;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 25px;
+        }
+        .user-welcome img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+        .user-welcome h3 {
+            margin-bottom: 5px;
+        }
+        .user-welcome p {
+            margin-bottom: 0;
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+        .forum-categories ul {
+            list-style: none;
+        }
+        .forum-categories ul li {
+            margin-bottom: 12px;
+        }
+        .forum-categories ul li a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--dark-color);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+        }
+        .forum-categories ul li a:hover,
+        .forum-categories ul li a.active {
+            background-color: #e9f5e9;
+            color: var(--primary-color);
+        }
+        .discussion-item {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+        .discussion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        .discussion-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .discussion-author img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+        .discussion-badge {
+            background-color: #e9f5e9;
+            color: var(--primary-color);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        .discussion-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+            text-decoration: none;
+            display: block;
+        }
+        .discussion-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .discussion-stats {
+            display: flex;
+            gap: 20px;
+        }
+        .discussion-stats span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--gray-color);
+        }
+        .stat-value.updating {
+            animation: pulse 0.5s ease;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); color: #ffd43b; }
+            100% { transform: scale(1); }
+        }
+        .online-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: #40c057;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: blink 2s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        /* Style cho tính năng đang phát triển */
+        .developing-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray-color);
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+        }
+        
+        .developing-message i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .developing-message h3 {
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+        
+        .developing-message p {
+            margin-bottom: 0;
+        }
+        
+        .count-zero {
+            color: var(--gray-color);
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Agri<span>Smart</span></div>
+        <nav>
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home"></i> Trang chủ</a></li>
+                <li><a href="weather.html"><i class="fas fa-cloud-sun"></i> Thời tiết</a></li>
+                <li><a href="prices.html"><i class="fas fa-chart-line"></i> Giá cả</a></li>
+                <li><a href="knowledge.html"><i class="fas fa-book"></i> Kiến thức</a></li>
+                <li><a href="community.html" class="active"><i class="fas fa-users"></i> Cộng đồng</a></li>
+            </ul>
+        </nav>
+        <div class="header-right">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Tìm kiếm trong diễn đàn..." id="searchInput">
+            </div>
+            <div class="notification" id="notificationBtn">
+                <i class="fas fa-bell"></i>
+                <!-- Đã xóa badge thông báo -->
+            </div>
+            <div class="user-profile" id="userMenuContainer"></div>
+        </div>
+    </header>
+
+    <section class="community-hero">
+        <div class="hero-content">
+            <h1>Cộng đồng nông dân AgriSmart</h1>
+            <p>Kết nối, chia sẻ và học hỏi từ hơn 50.000 nông dân trên khắp cả nước</p>
+            <div class="hero-actions">
+                <a href="#" class="btn-primary" onclick="showNotificationModal(); return false;"><i class="fas fa-pen"></i> Tạo bài viết mới</a>
+                <a href="#" class="btn-secondary" style="background:rgba(255,255,255,0.2); color:white; border-color:white;" onclick="showNotificationModal(); return false;">
+                    <i class="fas fa-question-circle"></i> Hỏi đáp
+                </a>
+            </div>
+            <div class="community-stats">
+                <div class="stat"><span class="stat-value">52,345</span><span>Thành viên</span></div>
+                <div class="stat"><span class="stat-value">154</span><span>Bài viết</span></div>
+                <div class="stat"><span class="stat-value">1,584</span><span>Bình luận</span></div>
+                <div class="stat">
+                    <span class="stat-value" id="onlineCount"></span>
+                    <span><span class="online-indicator"></span> Đang online</span>
+                </div>
+            </div>
+        </div>
+        <div class="weather-chat">
+            <div class="weather-topic">
+                <div class="topic-header">
+                    <i class="fas fa-cloud-sun" style="font-size:2rem;"></i>
+                    <h3 style="color:white;">Thảo luận thời tiết hôm nay</h3>
+                </div>
+                <div id="weatherDiscussionContent">
+                    <!-- Sẽ hiển thị tính năng đang phát triển -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="forum-layout">
+        <aside class="forum-sidebar">
+            <div class="user-welcome" id="sidebarUserWelcome"></div>
+            <div class="forum-categories">
+                <h3><i class="fas fa-list"></i> Danh mục</h3>
+                <ul>
+                    <li><a href="#" class="active" onclick="showNotificationModal(); return false;"><i class="fas fa-comments"></i> Tất cả bài viết <span class="count count-zero">0</span></a></li>
+                    <li><a href="#" onclick="showNotificationModal(); return false;"><i class="fas fa-seedling"></i> Kỹ thuật canh tác <span class="count count-zero">0</span></a></li>
+                    <li><a href="#" onclick="showNotificationModal(); return false;"><i class="fas fa-bug"></i> Phòng trừ sâu bệnh <span class="count count-zero">0</span></a></li>
+                    <li><a href="#" onclick="showNotificationModal(); return false;"><i class="fas fa-chart-line"></i> Giá cả thị trường <span class="count count-zero">0</span></a></li>
+                    <li><a href="#" onclick="showNotificationModal(); return false;"><i class="fas fa-hand-holding-usd"></i> Mua bán - Hợp tác <span class="count count-zero">0</span></a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="forum-main">
+            <div class="discussions-list" id="discussionsList">
+                <!-- Sẽ hiển thị tính năng đang phát triển -->
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">Agri<span>Smart</span></div>
+                    <p>Nền tảng nông nghiệp thông minh hàng đầu Việt Nam, kết nối nhà nông với công nghệ và thị trường.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-zalo"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h3>Liên kết nhanh</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html"><i class="fas fa-chevron-right"></i> Trang chủ</a></li>
+                        <li><a href="weather.html"><i class="fas fa-chevron-right"></i> Thời tiết</a></li>
+                        <li><a href="prices.html"><i class="fas fa-chevron-right"></i> Giá nông sản</a></li>
+                        <li><a href="knowledge.html"><i class="fas fa-chevron-right"></i> Kiến thức</a></li>
+                        <li><a href="community.html"><i class="fas fa-chevron-right"></i> Cộng đồng</a></li>
+                        <li><a href="profile.html"><i class="fas fa-chevron-right"></i> Trang cá nhân</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Liên hệ</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i><span>123 Nguyễn Văn Linh, Quận 7, TP.HCM</span></li>
+                        <li><i class="fas fa-phone-alt"></i><span>1800-1234 (Miễn phí)</span></li>
+                        <li><i class="fas fa-envelope"></i><span>info@agrismart.vn</span></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Tải ứng dụng</h3>
+                    <p>Ứng dụng AgriSmart có mặt trên:</p>
+                    <div class="app-buttons">
+                        <a href="#" class="app-btn"><i class="fab fa-google-play"></i> Google Play</a>
+                        <a href="#" class="app-btn"><i class="fab fa-apple"></i> App Store</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 AgriSmart - Nông Nghiệp Thông Minh. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            updateUserMenu();
+            loadWeatherDiscussion();
+            loadDiscussions();
+            updateSidebarUser();
+            startOnlineCounter();
+            
+            document.getElementById('notificationBtn').addEventListener('click', function() {
+                showNotificationModal();
+            });
+            
+            // Thêm sự kiện click cho các nút tạo bài viết và hỏi đáp
+            document.querySelectorAll('.hero-actions a').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showNotificationModal();
+                });
+            });
+        });
+
+        function updateUserMenu() {
+    const userContainer = document.getElementById('userMenuContainer');
+    const savedUser = localStorage.getItem('agri_user') || sessionStorage.getItem('agri_user');
+    
+    if (savedUser) {
+        const userData = JSON.parse(savedUser);
+        
+        let avatarHtml = '';
+        if (userData.avatar) {
+            avatarHtml = `<img src="${userData.avatar}" alt="${userData.name}" class="user-avatar">`;
+        } else {
+            avatarHtml = `<div class="user-avatar" style="background-color: #f1f3f5; display: flex; align-items: center; justify-content: center;"><i class="fas fa-user-circle" style="font-size: 2rem; color: #adb5bd;"></i></div>`;
+        }
+        
+        let dropdownAvatarHtml = '';
+        if (userData.avatar) {
+            dropdownAvatarHtml = `<img src="${userData.avatar}" alt="${userData.name}">`;
+        } else {
+            dropdownAvatarHtml = `<div style="width: 50px; height: 50px; border-radius: 50%; background-color: #f1f3f5; display: flex; align-items: center; justify-content: center;"><i class="fas fa-user-circle" style="font-size: 2.5rem; color: #adb5bd;"></i></div>`;
+        }
+        
+        userContainer.innerHTML = `
+            <div class="user-profile" onclick="toggleUserDropdown(event)">
+                ${avatarHtml}
+                <div class="user-dropdown">
+                    <div class="dropdown-header">
+                        ${dropdownAvatarHtml}
+                        <div class="user-info">
+                            <h4>${userData.name}</h4>
+                            <p>${userData.email}</p>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu">
+                        <li><a href="profile.html"><i class="fas fa-user"></i> Trang cá nhân</a></li>
+                    </ul>
+                    <div class="dropdown-footer">
+                        <a href="#" onclick="logout(); return false;" class="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        userContainer.innerHTML = `<a href="login.html" class="login-btn"><i class="fas fa-sign-in-alt"></i> Đăng nhập</a>`;
+    }
+}
+
+function updateSidebarUser() {
+    const savedUser = localStorage.getItem('agri_user') || sessionStorage.getItem('agri_user');
+    const sidebar = document.getElementById('sidebarUserWelcome');
+    
+    if (savedUser) {
+        const userData = JSON.parse(savedUser);
+        
+        let avatarHtml = '';
+        if (userData.avatar) {
+            avatarHtml = `<img src="${userData.avatar}" alt="${userData.name}">`;
+        } else {
+            avatarHtml = `<div style="width: 80px; height: 80px; border-radius: 50%; background-color: #f1f3f5; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-user-circle" style="font-size: 3rem; color: #adb5bd;"></i></div>`;
+        }
+        
+        sidebar.innerHTML = `
+            ${avatarHtml}
+            <h3>Xin chào, ${userData.name}!</h3>
+        `;
+    } else {
+        sidebar.innerHTML = `
+            <img src="https://i.pravatar.cc/80?img=1" alt="Guest">
+            <h3>Khách</h3>
+            <p><a href="login.html" style="color:var(--primary-color);">Đăng nhập</a> để tham gia</p>
+        `;
+    }
+}
+
+        function toggleUserDropdown(event) {
+            event.stopPropagation();
+            event.currentTarget.classList.toggle('active');
+        }
+
+        document.addEventListener('click', function() {
+            const userProfile = document.querySelector('.user-profile');
+            if (userProfile) userProfile.classList.remove('active');
+        });
+
+        function logout() {
+            localStorage.removeItem('agri_user');
+            sessionStorage.removeItem('agri_user');
+            window.location.reload();
+        }
+
+        // ========== NOTIFICATION MODAL - TÍNH NĂNG ĐANG PHÁT TRIỂN ==========
+        function showNotificationModal() {
+            const modal = document.createElement('div');
+            modal.className = 'notification-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Thông báo</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="developing-content">
+                        <div class="developing-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="developing-title">Tính năng đang phát triển</div>
+                        <div class="developing-text">
+                            Chức năng này sẽ được cập nhật trong thời gian tới. 
+                            Hiện tại bạn có thể theo dõi thông tin qua các trang khác.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-ok" onclick="this.closest('.notification-modal').remove()">Đã hiểu</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            const closeBtn = modal.querySelector('.close-modal');
+            closeBtn.addEventListener('click', function() {
+                document.body.removeChild(modal);
+            });
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+
+        // ========== COMMUNITY CONTENT - TÍNH NĂNG ĐANG PHÁT TRIỂN ==========
+        function loadWeatherDiscussion() {
+            // Hiển thị tính năng đang phát triển cho khung thảo luận thời tiết
+            document.getElementById('weatherDiscussionContent').innerHTML = `
+                <div class="developing-message" style="background:rgba(255,255,255,0.15); color:white;">
+                    <i class="fas fa-tools"></i>
+                    <h3 style="color:white;">Tính năng đang phát triển</h3>
+                    <p style="color:rgba(255,255,255,0.8);">Chức năng thảo luận thời tiết sẽ sớm được ra mắt</p>
+                </div>
+            `;
+        }
+
+        function loadDiscussions() {
+            // Hiển thị tính năng đang phát triển cho danh sách bài viết
+            const container = document.getElementById('discussionsList');
+            container.innerHTML = `
+                <div class="developing-message">
+                    <i class="fas fa-tools"></i>
+                    <h3>Tính năng đang phát triển</h3>
+                    <p>Các bài viết và thảo luận sẽ sớm được cập nhật. Hãy quay lại sau!</p>
+                </div>
+            `;
+        }
+
+        function startOnlineCounter() {
+            updateOnlineCount();
+            setInterval(updateOnlineCount, 60000);
+        }
+
+        function updateOnlineCount() {
+            const onlineElement = document.getElementById('onlineCount');
+            const min = 200;
+            const max = 500;
+            const randomCount = Math.floor(Math.random() * (max - min + 1)) + min;
+            const formattedCount = randomCount.toLocaleString('vi-VN');
+            onlineElement.classList.add('updating');
+            onlineElement.textContent = formattedCount;
+            setTimeout(() => {
+                onlineElement.classList.remove('updating');
+            }, 500);
+        }
+    </script>
+</body>
+</html>

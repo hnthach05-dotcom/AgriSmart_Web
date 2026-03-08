@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiến thức nông nghiệp - Thư viện kỹ thuật - AgriSmart</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .knowledge-header {
+            background: linear-gradient(135deg, #e9f5e9 0%, #d4e6d4 100%);
+            border-radius: var(--border-radius);
+            padding: 50px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        .knowledge-header h1 { color: var(--primary-color); margin-bottom: 20px; }
+        .knowledge-header p { font-size: 1.1rem; max-width: 800px; margin: 0 auto 30px; }
+        .weather-recommendation {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin: 30px auto;
+            max-width: 900px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            box-shadow: var(--shadow-lg);
+            border-left: 6px solid var(--primary-color);
+        }
+        .weather-icon-large {
+            width: 80px;
+            height: 80px;
+            background-color: #e9f5e9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+        .weather-text-large { flex: 1; }
+        .weather-text-large h3 { margin-bottom: 8px; color: var(--primary-color); }
+        .weather-text-large p { margin: 0; color: var(--gray-color); }
+        .categories-section { margin-bottom: 50px; }
+        .section-title { margin-bottom: 30px; font-size: 2rem; text-align: center; }
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .category-card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 35px 25px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--dark-color);
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+            cursor: pointer;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(43, 138, 62, 0.2);
+            border-bottom-color: var(--primary-color);
+        }
+        .category-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #e9f5e9 0%, #c8e6c9 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 2.8rem;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        .category-card:hover .category-icon {
+            transform: scale(1.1);
+            background: var(--primary-color);
+            color: white;
+        }
+        .category-card h3 { margin-bottom: 15px; font-size: 1.3rem; font-weight: 600; }
+        .category-card p { font-size: 0.95rem; color: var(--gray-color); margin: 0 0 15px; line-height: 1.5; }
+        .category-count {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .category-articles { margin-top: 50px; display: none; }
+        .category-articles.active { display: block; }
+        .category-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9f5e9 100%);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        .category-header-icon {
+            width: 80px;
+            height: 80px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+        .category-header-content h2 { margin-bottom: 10px; color: var(--primary-color); }
+        .category-header-content p { margin: 0; color: var(--gray-color); font-size: 1rem; }
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        .article-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        .article-image {
+            height: 160px;
+            background: linear-gradient(135deg, #2B8A3E 0%, #087F5B 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+        }
+        .article-content { padding: 25px; flex: 1; }
+        .article-category {
+            display: inline-block;
+            background-color: #e9f5e9;
+            color: var(--primary-color);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .article-content h3 { font-size: 1.1rem; margin-bottom: 12px; line-height: 1.4; }
+        .article-excerpt { font-size: 0.9rem; color: var(--gray-color); margin-bottom: 15px; line-height: 1.5; }
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--gray-color);
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+        .article-meta span { display: flex; align-items: center; gap: 5px; }
+        .back-to-categories {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary-color);
+            font-weight: 500;
+            text-decoration: none;
+            margin-bottom: 30px;
+            padding: 12px 25px;
+            background-color: #f8f9fa;
+            border-radius: 30px;
+            transition: var(--transition);
+        }
+        .back-to-categories:hover { background-color: #e9f5e9; transform: translateX(-5px); }
+        .loading { grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray-color); }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 40px;
+        }
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+            background-color: white;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .page-btn:hover, .page-btn.active { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Agri<span>Smart</span></div>
+        <nav>
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home"></i> Trang chủ</a></li>
+                <li><a href="weather.html"><i class="fas fa-cloud-sun"></i> Thời tiết</a></li>
+                <li><a href="prices.html"><i class="fas fa-chart-line"></i> Giá cả</a></li>
+                <li><a href="knowledge.html" class="active"><i class="fas fa-book"></i> Kiến thức</a></li>
+                <li><a href="community.html"><i class="fas fa-users"></i> Cộng đồng</a></li>
+            </ul>
+        </nav>
+        <div class="header-right">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Tìm kiếm bài viết..." id="searchInput">
+            </div>
+            <div class="notification" id="notificationBtn">
+                <i class="fas fa-bell"></i>
+                <!-- Đã xóa badge thông báo -->
+            </div>
+            <div class="user-profile" id="userMenuContainer"></div>
+        </div>
+    </header>
+
+    <section class="knowledge-header">
+        <h1>Thư viện kiến thức nông nghiệp</h1>
+        <p>Khám phá các danh mục kiến thức dưới đây để tìm hiểu kỹ thuật trồng trọt, chăm sóc cây trồng, phòng trừ sâu bệnh và ứng dụng công nghệ mới nhất</p>
+        <div class="weather-recommendation" id="weatherRecommendation">
+            <div class="weather-icon-large"><i class="fas fa-cloud-sun"></i></div>
+            <div class="weather-text-large">
+                <h3>Gợi ý theo thời tiết hôm nay</h3>
+                <p id="recommendationText">Đang tải gợi ý phù hợp với thời tiết...</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="categories-section">
+        <h2 class="section-title">Danh mục kiến thức</h2>
+        <div class="categories-grid" id="categoriesGrid"></div>
+    </section>
+
+    <section class="category-articles" id="categoryArticles">
+        <a href="#" class="back-to-categories" onclick="showCategories(); return false;">
+            <i class="fas fa-arrow-left"></i> Quay lại danh mục
+        </a>
+        <div class="category-header" id="categoryHeader"></div>
+        <div class="articles-grid" id="articlesGrid"></div>
+        <div class="pagination" id="articlesPagination">
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">Agri<span>Smart</span></div>
+                    <p>Nền tảng nông nghiệp thông minh hàng đầu Việt Nam, kết nối nhà nông với công nghệ và thị trường.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-zalo"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h3>Liên kết nhanh</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html"><i class="fas fa-chevron-right"></i> Trang chủ</a></li>
+                        <li><a href="weather.html"><i class="fas fa-chevron-right"></i> Thời tiết</a></li>
+                        <li><a href="prices.html"><i class="fas fa-chevron-right"></i> Giá nông sản</a></li>
+                        <li><a href="knowledge.html"><i class="fas fa-chevron-right"></i> Kiến thức</a></li>
+                        <li><a href="community.html"><i class="fas fa-chevron-right"></i> Cộng đồng</a></li>
+                        <li><a href="profile.html"><i class="fas fa-chevron-right"></i> Trang cá nhân</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Liên hệ</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i><span>123 Nguyễn Văn Linh, Quận 7, TP.HCM</span></li>
+                        <li><i class="fas fa-phone-alt"></i><span>1800-1234 (Miễn phí)</span></li>
+                        <li><i class="fas fa-envelope"></i><span>info@agrismart.vn</span></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Tải ứng dụng</h3>
+                    <p>Ứng dụng AgriSmart có mặt trên:</p>
+                    <div class="app-buttons">
+                        <a href="#" class="app-btn"><i class="fab fa-google-play"></i> Google Play</a>
+                        <a href="#" class="app-btn"><i class="fab fa-apple"></i> App Store</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 AgriSmart - Nông Nghiệp Thông Minh. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            updateUserMenu();
+            loadWeatherRecommendation();
+            loadCategories();
+            
+            document.getElementById('notificationBtn').addEventListener('click', function() {
+                showNotificationModal();
+            });
+        });
+
+        function updateUserMenu() {
+            const userContainer = document.getElementById('userMenuContainer');
+            const savedUser = localStorage.getItem('agri_user') || sessionStorage.getItem('agri_user');
+            
+            if (savedUser) {
+                const userData = JSON.parse(savedUser);
+                userContainer.innerHTML = `
+                    <div class="user-profile" onclick="toggleUserDropdown(event)">
+                        <img src="${userData.avatar || 'https://i.pravatar.cc/40?u=' + userData.email}" alt="${userData.name}" class="user-avatar">
+                        <div class="user-dropdown">
+                            <div class="dropdown-header">
+                                <img src="${userData.avatar || 'https://i.pravatar.cc/50?u=' + userData.email}" alt="${userData.name}">
+                                <div class="user-info">
+                                    <h4>${userData.name}</h4>
+                                    <p>${userData.email}</p>
+                                </div>
+                            </div>
+                            <ul class="dropdown-menu">
+                                <li><a href="profile.html"><i class="fas fa-user"></i> Trang cá nhân</a></li>
+                            </ul>
+                            <div class="dropdown-footer">
+                                <a href="#" onclick="logout(); return false;" class="logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                userContainer.innerHTML = `<a href="login.html" class="login-btn"><i class="fas fa-sign-in-alt"></i> Đăng nhập</a>`;
+            }
+        }
+
+        function toggleUserDropdown(event) {
+            event.stopPropagation();
+            event.currentTarget.classList.toggle('active');
+        }
+
+        document.addEventListener('click', function() {
+            const userProfile = document.querySelector('.user-profile');
+            if (userProfile) userProfile.classList.remove('active');
+        });
+
+        function logout() {
+            localStorage.removeItem('agri_user');
+            sessionStorage.removeItem('agri_user');
+            window.location.reload();
+        }
+
+        function showNotificationModal() {
+            const modal = document.createElement('div');
+            modal.className = 'notification-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Thông báo</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="developing-content">
+                        <div class="developing-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="developing-title">Tính năng đang phát triển</div>
+                        <div class="developing-text">
+                            Chức năng thông báo sẽ được cập nhật trong thời gian tới. 
+                            Hiện tại bạn có thể theo dõi thông tin qua các trang khác.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-ok" onclick="this.closest('.notification-modal').remove()">Đã hiểu</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            const closeBtn = modal.querySelector('.close-modal');
+            closeBtn.addEventListener('click', function() {
+                document.body.removeChild(modal);
+            });
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+
+        async function loadWeatherRecommendation() {
+            try {
+                const apiKey = 'bd5e378503939ddaee76f12ad7a97608';
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=Ho Chi Minh City,VN&units=metric&appid=${apiKey}&lang=vi`);
+                const data = await response.json();
+                let recommendation = '';
+                let icon = 'fa-cloud-sun';
+                if (data.weather && data.weather[0]) {
+                    const weather = data.weather[0].description;
+                    const temp = data.main.temp;
+                    if (weather.includes('mưa') || weather.includes('rain')) {
+                        recommendation = 'Thời tiết có mưa, thích hợp xem các bài viết về kỹ thuật thoát nước và phòng trừ nấm bệnh.';
+                        icon = 'fa-cloud-rain';
+                    } else if (temp > 32) {
+                        recommendation = 'Thời tiết nắng nóng, xem ngay bài viết về tưới tiêu tiết kiệm và che chắn cho cây trồng.';
+                        icon = 'fa-temperature-high';
+                    } else {
+                        recommendation = 'Thời tiết mát mẻ, khám phá các bài viết về kỹ thuật canh tác và chăm sóc cây trồng.';
+                    }
+                    document.querySelector('.weather-icon-large i').className = `fas ${icon}`;
+                    document.getElementById('recommendationText').textContent = recommendation;
+                }
+            } catch (error) {
+                document.getElementById('recommendationText').textContent = 'Khám phá các danh mục kiến thức dưới đây để nâng cao kỹ thuật canh tác.';
+            }
+        }
+
+        const categories = [
+            { id: 'cultivation', icon: 'fa-seedling', name: 'Kỹ thuật canh tác', description: 'Phương pháp trồng, chăm sóc cây trồng theo mùa vụ', count: 42, color: '#2B8A3E' },
+            { id: 'pest', icon: 'fa-bug', name: 'Phòng trừ sâu bệnh', description: 'Nhận diện và xử lý các loại dịch hại cây trồng', count: 35, color: '#2B8A3E' },
+            { id: 'irrigation', icon: 'fa-water', name: 'Thủy lợi & tưới tiêu', description: 'Hệ thống tưới thông minh, kỹ thuật tưới tiết kiệm nước', count: 24, color: '#2B8A3E' },
+            { id: 'fertilizer', icon: 'fa-flask', name: 'Phân bón & dinh dưỡng', description: 'Kỹ thuật bón phân, ủ phân hữu cơ, dinh dưỡng cây trồng', count: 28, color: '#2B8A3E' },
+            { id: 'tech', icon: 'fa-microchip', name: 'Công nghệ nông nghiệp', description: 'Ứng dụng IoT, drone, cảm biến trong nông nghiệp 4.0', count: 15, color: '#2B8A3E' },
+            { id: 'harvest', icon: 'fa-box', name: 'Thu hoạch & bảo quản', description: 'Kỹ thuật sau thu hoạch, bảo quản nông sản', count: 10, color: '#2B8A3E' }
+        ];
+
+        const articlesByCategory = {
+            cultivation: [
+                { title: 'Kỹ thuật trồng lúa năng suất cao vụ Hè Thu', excerpt: 'Hướng dẫn chi tiết quy trình trồng lúa từ khâu chọn giống, làm đất, gieo sạ đến chăm sóc và thu hoạch...', date: '15/06/2023', views: 1245, image: 'fa-seedling' },
+                { title: 'Cách trồng rau thủy canh tại nhà cho người mới bắt đầu', excerpt: 'Hệ thống thủy canh đơn giản, tiết kiệm chi phí, phù hợp với không gian nhỏ tại đô thị...', date: '14/06/2023', views: 2341, image: 'fa-leaf' },
+                { title: 'Kỹ thuật trồng và chăm sóc sầu riêng theo tiêu chuẩn VietGAP', excerpt: 'Quy trình từ khâu chọn giống, xử lý ra hoa, bón phân và phòng trừ sâu bệnh cho sầu riêng...', date: '13/06/2023', views: 3120, image: 'fa-tree' },
+                { title: 'Hướng dẫn trồng cà phê xen canh với cây ăn quả', excerpt: 'Mô hình trồng xen giúp tăng thu nhập và cải tạo đất, giảm rủi ro sâu bệnh...', date: '12/06/2023', views: 892, image: 'fa-leaf' },
+                { title: 'Kỹ thuật trồng ngô lai đạt năng suất cao', excerpt: 'Quy trình trồng ngô từ khâu chọn giống, làm đất, mật độ gieo trồng và chăm sóc...', date: '11/06/2023', views: 756, image: 'fa-seedling' }
+            ],
+            pest: [
+                { title: 'Cẩm nang nhận diện và phòng trừ 10 loại sâu bệnh phổ biến trên lúa', excerpt: 'Hình ảnh và mô tả chi tiết triệu chứng gây hại, biện pháp canh tác và sử dụng thuốc BVTV...', date: '16/06/2023', views: 4120, image: 'fa-bug' },
+                { title: 'Phòng trừ bệnh vàng lá thối rễ trên cây có múi', excerpt: 'Nhận biết triệu chứng và biện pháp phòng trừ bệnh vàng lá thối rễ trên cam, bưởi, quýt...', date: '15/06/2023', views: 2345, image: 'fa-leaf' },
+                { title: 'Biện pháp sinh học phòng trừ sâu đục thân trên lúa', excerpt: 'Sử dụng ong mắt đỏ và các chế phẩm sinh học để kiểm soát sâu đục thân hiệu quả...', date: '14/06/2023', views: 1567, image: 'fa-bug' },
+                { title: 'Phòng trừ rệp sáp hại cà phê', excerpt: 'Các biện pháp phòng trừ rệp sáp hiệu quả trên cây cà phê...', date: '13/06/2023', views: 1243, image: 'fa-bug' }
+            ],
+            irrigation: [
+                { title: 'Hệ thống tưới nhỏ giọt tự động cho vườn cây ăn trái', excerpt: 'Hướng dẫn lắp đặt và vận hành hệ thống tưới nhỏ giọt tự động, tiết kiệm 40% lượng nước...', date: '15/06/2023', views: 2890, image: 'fa-tint' },
+                { title: 'Kỹ thuật tưới tiết kiệm nước cho cây trồng cạn', excerpt: 'Các phương pháp tưới phù hợp cho ngô, khoai, sắn trong điều kiện khô hạn...', date: '14/06/2023', views: 1243, image: 'fa-water' },
+                { title: 'Hướng dẫn xây dựng hệ thống thoát nước cho vườn cây', excerpt: 'Giải pháp thoát nước hiệu quả, tránh ngập úng trong mùa mưa bão...', date: '13/06/2023', views: 987, image: 'fa-water' }
+            ],
+            fertilizer: [
+                { title: 'Sản xuất phân compost từ phụ phẩm nông nghiệp', excerpt: 'Hướng dẫn chi tiết cách ủ phân hữu cơ từ rơm rạ, thân cây ngô, vỏ trái cây...', date: '15/06/2023', views: 2341, image: 'fa-recycle' },
+                { title: 'Kỹ thuật bón phân cho cà phê thời kỳ kinh doanh', excerpt: 'Liều lượng và thời điểm bón phân hợp lý để cà phê đạt năng suất cao...', date: '14/06/2023', views: 1678, image: 'fa-flask' },
+                { title: 'Cách nhận biết và xử lý thiếu dinh dưỡng trên cây trồng', excerpt: 'Dấu hiệu thiếu đạm, lân, kali và cách bổ sung kịp thời cho cây...', date: '13/06/2023', views: 2134, image: 'fa-leaf' },
+                { title: 'Kỹ thuật bón phân cho cây ăn trái theo giai đoạn', excerpt: 'Lịch bón phân và liều lượng phù hợp cho cây có múi, xoài, nhãn...', date: '12/06/2023', views: 1456, image: 'fa-flask' }
+            ],
+            tech: [
+                { title: 'Ứng dụng IoT trong giám sát và tự động hóa nhà kính', excerpt: 'Hệ thống cảm biến đo nhiệt độ, độ ẩm, ánh sáng kết hợp điều khiển tự động...', date: '16/06/2023', views: 3245, image: 'fa-microchip' },
+                { title: 'Sử dụng drone trong phun thuốc và giám sát đồng ruộng', excerpt: 'Hiệu quả và tiết kiệm khi ứng dụng công nghệ bay trong nông nghiệp...', date: '15/06/2023', views: 2789, image: 'fa-robot' },
+                { title: 'Phần mềm quản lý trang trại thông minh', excerpt: 'Giới thiệu các ứng dụng giúp quản lý và theo dõi quá trình sản xuất...', date: '14/06/2023', views: 1432, image: 'fa-laptop' }
+            ],
+            harvest: [
+                { title: 'Kỹ thuật thu hoạch và bảo quản lúa sau thu hoạch', excerpt: 'Giảm tổn thất sau thu hoạch, bảo quản lúa đúng cách giữ chất lượng...', date: '15/06/2023', views: 1876, image: 'fa-box-open' },
+                { title: 'Phương pháp bảo quản rau quả tươi lâu', excerpt: 'Kỹ thuật xử lý và bảo quản rau quả trong điều kiện thường và kho lạnh...', date: '14/06/2023', views: 1543, image: 'fa-carrot' },
+                { title: 'Cách sấy và bảo quản nông sản khô', excerpt: 'Hướng dẫn sấy cà phê, tiêu, điều đúng kỹ thuật để giữ chất lượng...', date: '13/06/2023', views: 1123, image: 'fa-sun' }
+            ]
+        };
+
+        function loadCategories() {
+            const container = document.getElementById('categoriesGrid');
+            container.innerHTML = '';
+            categories.forEach(category => {
+                const card = document.createElement('div');
+                card.className = 'category-card';
+                card.setAttribute('onclick', `showCategoryArticles('${category.id}')`);
+                card.innerHTML = `
+                    <div class="category-icon" style="color: ${category.color};"><i class="fas ${category.icon}"></i></div>
+                    <h3>${category.name}</h3>
+                    <p>${category.description}</p>
+                    <span class="category-count">${category.count} bài viết</span>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function showCategoryArticles(categoryId) {
+            const category = categories.find(c => c.id === categoryId);
+            const articles = articlesByCategory[categoryId] || [];
+            document.querySelector('.categories-section').style.display = 'none';
+            document.getElementById('categoryArticles').classList.add('active');
+            document.getElementById('categoryHeader').innerHTML = `
+                <div class="category-header-icon"><i class="fas ${category.icon}"></i></div>
+                <div class="category-header-content">
+                    <h2>${category.name}</h2>
+                    <p>${category.description} • ${category.count} bài viết</p>
+                </div>
+            `;
+            const articlesGrid = document.getElementById('articlesGrid');
+            articlesGrid.innerHTML = '';
+            articles.forEach(article => {
+                const card = `
+                    <div class="article-card">
+                        <div class="article-image"><i class="fas ${article.image}"></i></div>
+                        <div class="article-content">
+                            <span class="article-category">${category.name}</span>
+                            <h3>${article.title}</h3>
+                            <p class="article-excerpt">${article.excerpt}</p>
+                            <div class="article-meta">
+                                <span><i class="far fa-calendar"></i> ${article.date}</span>
+                                <span><i class="far fa-eye"></i> ${article.views}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                articlesGrid.innerHTML += card;
+            });
+            document.getElementById('categoryArticles').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showCategories() {
+            document.querySelector('.categories-section').style.display = 'block';
+            document.getElementById('categoryArticles').classList.remove('active');
+            document.querySelector('.categories-section').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

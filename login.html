@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - AgriSmart</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #e9f5e9 0%, #c8e6c9 100%);
+            padding: 20px;
+        }
+        .login-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            max-width: 1100px;
+            width: 100%;
+            background-color: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        @media (max-width: 768px) {
+            .login-container { grid-template-columns: 1fr; }
+        }
+        .login-left {
+            background: linear-gradient(135deg, #2B8A3E 0%, #087F5B 100%);
+            padding: 40px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .login-left .logo {
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+        }
+        .login-left .logo span { color: #ffd43b; }
+        .login-left h2 { color: white; font-size: 2rem; margin-bottom: 20px; }
+        .login-left p { color: rgba(255,255,255,0.9); font-size: 1.1rem; margin-bottom: 30px; }
+        .feature-list {
+            list-style: none;
+            margin-bottom: 40px;
+        }
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            color: rgba(255,255,255,0.95);
+        }
+        .feature-list li i { color: #ffd43b; width: 24px; }
+        .login-right {
+            padding: 40px;
+            background-color: white;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-header h1 { color: var(--primary-color); margin-bottom: 10px; }
+        .weather-widget-mini {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-left: 4px solid var(--primary-color);
+        }
+        .weather-icon { font-size: 2rem; color: var(--primary-color); }
+        .weather-info { flex: 1; }
+        .weather-info .temp { font-size: 1.2rem; font-weight: 600; }
+        .weather-info .desc { font-size: 0.9rem; color: var(--gray-color); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .input-group:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(43,138,62,0.1);
+        }
+        .input-icon {
+            padding: 0 15px;
+            background-color: #f8f9fa;
+            color: var(--gray-color);
+        }
+        .input-group input {
+            flex: 1;
+            padding: 14px 0;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+        }
+        .password-toggle {
+            padding: 0 15px;
+            cursor: pointer;
+            color: var(--gray-color);
+        }
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 20px;
+        }
+        .btn-login:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        .social-login { text-align: center; margin-bottom: 25px; }
+        .social-login p {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .social-login p::before,
+        .social-login p::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 30%;
+            height: 1px;
+            background-color: var(--border-color);
+        }
+        .social-login p::before { left: 0; }
+        .social-login p::after { right: 0; }
+        .social-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        .social-btn {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        .social-btn:hover { background-color: #f8f9fa; transform: translateY(-2px); }
+        .social-btn.facebook { color: #1877f2; }
+        .social-btn.google { color: #ea4335; }
+        .register-link {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        .register-link a {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray-color);
+            text-decoration: none;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+        .back-home:hover { color: var(--primary-color); }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background-color: white;
+            border-radius: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h2 { margin: 0; color: var(--primary-color); }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-color);
+        }
+        .modal-body { padding: 25px; }
+        .register-success { text-align: center; padding: 30px; }
+        .success-icon { font-size: 4rem; color: var(--primary-color); margin-bottom: 20px; }
+        .btn-success {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .welcome-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: none;
+            align-items: center;
+            gap: 15px;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .welcome-toast.active { display: flex; }
+        .welcome-icon {
+            width: 50px;
+            height: 50px;
+            background-color: #e9f5e9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+        .welcome-content { flex: 1; }
+        .welcome-content h4 { margin-bottom: 5px; }
+        .welcome-content p { margin: 0; font-size: 0.9rem; color: var(--gray-color); }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-container">
+            <!-- Left Panel -->
+            <div class="login-left">
+                <div>
+                    <div class="logo">Agri<span>Smart</span></div>
+                    <h2>Chào mừng trở lại!</h2>
+                    <p>Đăng nhập để kết nối với cộng đồng nông dân thông minh.</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check-circle"></i> Theo dõi thời tiết thực tế theo vùng</li>
+                        <li><i class="fas fa-check-circle"></i> Cập nhật giá nông sản hàng ngày</li>
+                        <li><i class="fas fa-check-circle"></i> Thư viện kiến thức kỹ thuật</li>
+                        <li><i class="fas fa-check-circle"></i> Kết nối 500+ nông dân</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Right Panel - Login Form -->
+            <div class="login-right">
+                <a href="index.html" class="back-home">
+                    <i class="fas fa-arrow-left"></i> Quay lại trang chủ
+                </a>
+                
+                <div class="login-header">
+                    <h1>Đăng nhập</h1>
+                    <p>Đăng nhập để trải nghiệm đầy đủ tính năng</p>
+                </div>
+                
+                <!-- Weather Widget -->
+                <div class="weather-widget-mini" id="loginWeatherWidget">
+                    <div class="weather-icon"><i class="fas fa-cloud-sun"></i></div>
+                    <div class="weather-info">
+                        <div class="temp" id="weatherTemp">Đang tải...</div>
+                        <div class="desc" id="weatherDesc">TP. Hồ Chí Minh</div>
+                    </div>
+                    <div style="font-size:0.9rem; color:var(--gray-color);">
+                        <i class="far fa-calendar-alt"></i>
+                        <span id="currentDate"></span>
+                    </div>
+                </div>
+                
+                <!-- Login Form -->
+                <form class="login-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email hoặc số điện thoại</label>
+                        <div class="input-group">
+                            <span class="input-icon"><i class="fas fa-user"></i></span>
+                            <input type="email" id="email" placeholder="Nhập email của bạn" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Mật khẩu</label>
+                        <div class="input-group">
+                            <span class="input-icon"><i class="fas fa-lock"></i></span>
+                            <input type="password" id="password" placeholder="Nhập mật khẩu" required>
+                            <span class="password-toggle" onclick="togglePassword('password')">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-options">
+                        <label class="remember-me">
+                            <input type="checkbox" id="remember"> Ghi nhớ đăng nhập
+                        </label>
+                        <a href="#" class="forgot-password">Quên mật khẩu?</a>
+                    </div>
+                    
+                    <button type="submit" class="btn-login">
+                        <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                    </button>
+                </form>
+                
+                <!-- Social Login -->
+                <div class="social-login">
+                    <p>Hoặc đăng nhập với</p>
+                    <div class="social-buttons">
+                        <button class="social-btn facebook" onclick="socialLogin('facebook')">
+                            <i class="fab fa-facebook-f"></i> Facebook
+                        </button>
+                        <button class="social-btn google" onclick="socialLogin('google')">
+                            <i class="fab fa-google"></i> Google
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Register Link -->
+                <div class="register-link">
+                    Chưa có tài khoản? 
+                    <a href="#" onclick="openRegisterModal(); return false;">
+                        Đăng ký ngay <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Đăng ký tài khoản</h2>
+                <button class="close-modal" onclick="closeRegisterModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="registerFormContainer">
+                    <form id="registerForm">
+                        <div class="form-group">
+                            <label for="fullname">Họ và tên</label>
+                            <div class="input-group">
+                                <span class="input-icon"><i class="fas fa-user"></i></span>
+                                <input type="text" id="fullname" placeholder="Nhập họ và tên" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg_email">Email</label>
+                            <div class="input-group">
+                                <span class="input-icon"><i class="fas fa-envelope"></i></span>
+                                <input type="email" id="reg_email" placeholder="Nhập email" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Số điện thoại</label>
+                            <div class="input-group">
+                                <span class="input-icon"><i class="fas fa-phone"></i></span>
+                                <input type="tel" id="phone" placeholder="Nhập số điện thoại" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg_password">Mật khẩu</label>
+                            <div class="input-group">
+                                <span class="input-icon"><i class="fas fa-lock"></i></span>
+                                <input type="password" id="reg_password" placeholder="Tối thiểu 8 ký tự" required>
+                                <span class="password-toggle" onclick="togglePassword('reg_password')">
+                                    <i class="fas fa-eye"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm_password">Xác nhận mật khẩu</label>
+                            <div class="input-group">
+                                <span class="input-icon"><i class="fas fa-lock"></i></span>
+                                <input type="password" id="confirm_password" placeholder="Nhập lại mật khẩu" required>
+                                <span class="password-toggle" onclick="togglePassword('confirm_password')">
+                                    <i class="fas fa-eye"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="province">Tỉnh/Thành phố</label>
+                            <div class="input-group">
+                                <span class="input-icon"><i class="fas fa-map-marker-alt"></i></span>
+                                <select id="province" style="flex:1; padding:14px 0; border:none; outline:none; background:transparent;">
+                                    <option value="">Chọn tỉnh/thành phố</option>
+                                    <option value="hcm">TP. Hồ Chí Minh</option>
+                                    <option value="hn">Hà Nội</option>
+                                    <option value="dn">Đà Nẵng</option>
+                                    <option value="ct">Cần Thơ</option>
+                                    <option value="ag">An Giang</option>
+                                    <option value="tg">Tiền Giang</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="remember-me" style="display:flex; gap:10px;">
+                                <input type="checkbox" id="agree_terms" required>
+                                <span style="font-size:0.95rem;">
+                                    Tôi đồng ý với <a href="#" style="color:var(--primary-color);">Điều khoản</a>
+                                </span>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn-login" style="margin-top:20px;">
+                            <i class="fas fa-user-plus"></i> Đăng ký
+                        </button>
+                    </form>
+                </div>
+                <div id="registerSuccess" style="display:none;">
+                    <div class="register-success">
+                        <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+                        <h3>Đăng ký thành công!</h3>
+                        <p>Vui lòng kiểm tra email để xác thực tài khoản.</p>
+                        <button class="btn-success" onclick="closeRegisterModal()">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Welcome Toast -->
+    <div id="welcomeToast" class="welcome-toast">
+        <div class="welcome-icon"><i class="fas fa-user-check"></i></div>
+        <div class="welcome-content">
+            <h4 id="welcomeMessage">Xin chào!</h4>
+            <p id="welcomeSubtext">Đăng nhập thành công. Đang chuyển hướng...</p>
+        </div>
+        <button class="close-toast" onclick="closeToast()"><i class="fas fa-times"></i></button>
+    </div>
+
+    <script>
+        // ========== WEATHER ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            loadWeatherData();
+            updateCurrentDate();
+        });
+
+        async function loadWeatherData() {
+            try {
+                const apiKey = 'bd5e378503939ddaee76f12ad7a97608';
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=Ho Chi Minh City,VN&units=metric&appid=${apiKey}&lang=vi`);
+                const data = await response.json();
+                if (data.main) {
+                    document.getElementById('weatherTemp').innerHTML = `${Math.round(data.main.temp)}°C - ${data.weather[0].description}`;
+                    document.getElementById('weatherDesc').innerHTML = data.name;
+                }
+            } catch (error) {
+                document.getElementById('weatherTemp').innerHTML = '28°C - Mây thưa';
+                document.getElementById('weatherDesc').innerHTML = 'TP. Hồ Chí Minh';
+            }
+        }
+
+        function updateCurrentDate() {
+            const now = new Date();
+            document.getElementById('currentDate').innerHTML = now.toLocaleDateString('vi-VN', { weekday: 'short', day: 'numeric', month: 'numeric' });
+        }
+
+        // ========== AUTH ==========
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = event.currentTarget.querySelector('i');
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                field.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const remember = document.getElementById('remember').checked;
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đăng nhập...';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                const userName = email.split('@')[0];
+                const displayName = userName.charAt(0).toUpperCase() + userName.slice(1);
+                
+                const userData = {
+                    name: displayName,
+                    email: email,
+                    avatar: `https://i.pravatar.cc/100?u=${email}`,
+                    loginTime: new Date().toISOString()
+                };
+                
+                if (remember) {
+                    localStorage.setItem('agri_user', JSON.stringify(userData));
+                } else {
+                    sessionStorage.setItem('agri_user', JSON.stringify(userData));
+                }
+                
+                showWelcomeToast(displayName);
+                setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+            }, 1500);
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const password = document.getElementById('reg_password').value;
+            const confirm = document.getElementById('confirm_password').value;
+            
+            if (password.length < 8) { alert('Mật khẩu phải có ít nhất 8 ký tự'); return; }
+            if (password !== confirm) { alert('Mật khẩu xác nhận không khớp'); return; }
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đăng ký...';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                document.getElementById('registerFormContainer').style.display = 'none';
+                document.getElementById('registerSuccess').style.display = 'block';
+                
+                setTimeout(() => {
+                    closeRegisterModal();
+                    document.getElementById('registerForm').reset();
+                    document.getElementById('registerFormContainer').style.display = 'block';
+                    document.getElementById('registerSuccess').style.display = 'none';
+                    submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Đăng ký';
+                    submitBtn.disabled = false;
+                    
+                    const regEmail = document.getElementById('reg_email').value;
+                    document.getElementById('email').value = regEmail;
+                    document.getElementById('password').focus();
+                }, 3000);
+            }, 1500);
+        });
+
+        function socialLogin(provider) {
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang kết nối...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                const userData = {
+                    name: `User_${provider}`,
+                    email: `user@${provider}.com`,
+                    avatar: `https://i.pravatar.cc/100?u=${provider}`,
+                    loginTime: new Date().toISOString()
+                };
+                sessionStorage.setItem('agri_user', JSON.stringify(userData));
+                showWelcomeToast(`User_${provider}`);
+                setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }, 1500);
+        }
+
+        function showWelcomeToast(userName) {
+            document.getElementById('welcomeMessage').innerHTML = `Xin chào, ${userName}!`;
+            document.getElementById('welcomeToast').classList.add('active');
+            setTimeout(() => { closeToast(); }, 3000);
+        }
+
+        function closeToast() {
+            document.getElementById('welcomeToast').classList.remove('active');
+        }
+
+        function openRegisterModal() {
+            document.getElementById('registerModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeRegisterModal() {
+            document.getElementById('registerModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            document.getElementById('registerForm').reset();
+            document.getElementById('registerFormContainer').style.display = 'block';
+            document.getElementById('registerSuccess').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('registerModal');
+            if (event.target === modal) closeRegisterModal();
+        }
+    </script>
+</body>
+</html>
